@@ -1,0 +1,455 @@
+{
+    "81": {
+        "base": "1",
+        "n_procs": 8,
+        "prioritized_sampling": false,
+        "reward_exponent": 1,
+        "n_runs": 1,
+
+        "n_input_features": 2,
+
+        "episodes": 500,
+        "simulations": 50,
+        "n_actors": 40,
+        "train_steps": 4000,
+        "alpha": 0.001,
+        "schedule_alpha": true,
+        "horizon": 400,
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.5,
+        "pb_c_base": 19000,
+        "pb_c_init": 0.3,
+        "tough_ce": true,
+
+        "desired_eval_len": 40,
+        "n_desired_eval_len": 15
+    },
+    "101": {
+        "base": "81",
+        "n_procs": 8,
+        "prioritized_sampling": false,
+        "reward_exponent": 1,
+        "n_runs": 1,
+
+        "n_input_features": 2,
+
+        "episodes": 500,
+        "simulations": 50,
+        "n_actors": 10,
+        "train_steps": 4000,
+        "alpha": 0.001,
+        "schedule_alpha": true,
+        "horizon": 400,
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.5,
+        "pb_c_base": 19000,
+        "pb_c_init": 0.3,
+        "tough_ce": true,
+
+        "desired_eval_len": 40,
+        "n_desired_eval_len": 15
+    },
+    "102": {
+        "base": "81",
+        "episodes": 1000
+    },
+    "103": {
+        "base": "81",
+        "horizon": 1000,
+        "episodes": 1000
+    },
+    "104": {
+        "base": "81",
+        "alpha": 0.005,
+        "episodes": 1000
+    },
+    "105": {
+        "base": "81",
+        "alpha": 0.0002,
+        "episodes": 1000
+    },
+    "106": {
+        "base": "81",
+        "scheduler_factor": 0.998,
+        "episodes": 1000
+    },
+    "107": {
+        "base": "81",
+        "alpha": 0.0002,
+        "scheduler_factor": 0.999,
+        "episodes": 1100
+    },
+    "108": {
+        "base": "81",
+        "pb_c_init": 0.2,
+        "episodes": 1000
+    },
+    "109": {
+        "base": "81",
+        "pb_c_init": 0.4,
+        "episodes": 1000
+    },
+    "110": {
+        "base": "81",
+        "net_architecture": [32, 32, 32, 32],
+        "episodes": 1000
+    },
+    "111": {
+        "base": "81",
+        "net_architecture": [32, 32, 32],
+        "scheduler_factor": 0.999,
+        "episodes": 1000
+    },
+    "112": {
+        "base": "81",
+        "pb_c_init": 0.15,
+        "scheduler_factor": 0.998,
+        "episodes": 1000
+    },
+    "113": {
+        "base": "81",
+        "pb_c_init": 0.15,
+        "episodes": 1000,
+
+        "scheduler_class": "reduce_eval",
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_factor": 0.3
+    },
+    "114": {
+        "base": "81",
+        "pb_c_base": 1000,
+        "pb_c_init": 0.1,
+        "episodes": 1000,
+
+        "scheduler_class": "reduce_eval",
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_factor": 0.3
+    },
+    "115": {
+        "base": "81",
+        "pb_c_init": 0.15,
+        "scheduler_factor": 0.998,
+        "episodes": 1000,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5
+    },
+    "116": {
+        "base": "81",
+        "pb_c_init": 0.15,
+        "scheduler_factor": 0.998,
+        "episodes": 1000,
+        "use_weight_decay": true
+    },
+    "117": {
+        "base": "81",
+        "pb_c_base": 200,
+        "pb_c_init": 0.1,
+        "episodes": 1000,
+
+        "scheduler_class": "reduce_eval",
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_factor": 0.3
+    },
+    "118": {
+        "base": "81",
+        "pb_c_base": 200,
+        "pb_c_init": 0.1,
+        "episodes": 1000,
+
+        "scheduler_class": "reduce_eval",
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_factor": 0.3,
+        "scheduler_consecutive": false
+    },
+    "119": {
+        "base": "81",
+        "pb_c_base": 1000,
+        "pb_c_init": 0.1,
+        "episodes": 1000,
+
+        "scheduler_class": "reduce_eval",
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_factor": 0.3,
+        "scheduler_consecutive": false
+    },
+    "PROF": {
+        "base": "81",
+        "n_actors": 2,
+        "episodes": 10
+    },
+    "PROF2": {
+        "base": "81",
+        "n_actors": 2,
+        "episodes": 1,
+        "n_runs": 1,
+        "train_steps": 100
+    },
+    "120": {
+        "base": "81",
+        "pb_c_base": 1000,
+        "pb_c_init": 0.1,
+        "episodes": 1000,
+
+        "scheduler_class": "reduce_eval",
+        "scheduler_min_good_eval": -100.0,
+        "scheduler_min_n_good_evals": 10,
+        "scheduler_factor": 0.5,
+        "scheduler_consecutive": false,
+
+        "desired_eval_len": 110,
+        "n_desired_eval_len": 100
+    },
+    "121": {
+        "base": "120",
+        "use_weight_decay": true
+    },
+    "122": {
+        "base": "120",
+        "pb_c_init": 0.05
+    },
+    "123": {
+        "base": "120"
+    },
+    "124": {
+        "base": "120",
+        "pb_c_init": 0.03
+    },
+    "125": {
+        "base": "120",
+        "pb_c_base": 1600,
+        "pb_c_init": 0.05
+    },
+    "126": {
+        "base": "120",
+        "pb_c_init": 0.05,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5
+    },
+    "127": {
+        "base": "120",
+        "pb_c_base": 1600,
+        "pb_c_init": 0.05,
+        "alpha": 0.0005
+    },
+    "128": {
+        "base": "120",
+        "pb_c_base": 1600,
+        "pb_c_init": 0.05,
+        "alpha": 0.002,
+        "use_weight_decay": true
+    },
+    "129": {
+        "base": "120",
+        "pb_c_init": 0.01
+    },
+    "130": {
+        "base": "120",
+        "pb_c_base": 1600,
+        "pb_c_init": 0.01
+    },
+    "131": {
+        "base": "120",
+        "pb_c_base": 1600,
+        "pb_c_init": 0.01,
+        "dirichlet_alpha": 0.2,
+        "dirichlet_frac": 0.5
+    },
+    "132": {
+        "base": "120",
+        "pb_c_base": 1600,
+        "pb_c_init": 0.01,
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.5
+    },
+    "133": {
+        "base": "120",
+        "pb_c_base": 1600,
+        "pb_c_init": 0.01,
+        "dirichlet_alpha": 0.2,
+        "dirichlet_frac": 0.3
+    },
+    "134": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "net_architecture": [64, 64, 32]
+    },
+    "135": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "net_architecture": [64, 32]
+    },
+    "136": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "scheduler_min_n_good_evals": 20
+    },
+    "137": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false
+    },
+    "138": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.2,
+        "dirichlet_frac": 0.3
+    },
+    "139": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.3
+    },
+    "140": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5
+    },
+    "141": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.5,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 20
+    },
+    "142": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 20
+    },
+    "143": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 10
+    },
+    "144": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.5,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 10
+    },
+    "145": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 10,
+        "alpha": 0.0005
+    },
+    "146": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 20,
+        "alpha": 0.0005
+    },
+    "147": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.5,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 20,
+        "alpha": 0.0005
+    },
+    "148": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.5,
+        "scheduler_min_good_eval": -110.0,
+        "scheduler_min_n_good_evals": 20,
+        "alpha": 0.0002
+    },
+    "149": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "alpha": 0.0001
+    },
+    "150": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.6,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000
+    },
+    "151": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.7,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000
+    },
+    "152": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.7,
+        "dirichlet_frac": 0.3,
+        "memory_capacity": 2000
+    },
+    "153": {
+        "base": "120",
+        "pb_c_init": 0.001,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000
+    },
+    "154": {
+        "base": "120",
+        "pb_c_init": 0.02,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000
+    },
+    "155": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.9,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000
+    },
+    "156": {
+        "base": "120",
+        "pb_c_init": 0.01,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000,
+        "episodes": 1300,
+        "simulations": 40
+    },
+    "157": {
+        "base": "120",
+        "pb_c_init": 0.15,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.9,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000
+    }
+}
