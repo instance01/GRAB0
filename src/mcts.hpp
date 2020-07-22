@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <torch/torch.h>
+#include "bandit.hpp"
 #include "env_wrapper.hpp"
 #include "a2c.hpp"
 #include "cfg.hpp"
@@ -33,7 +34,7 @@ class Node {
     }
 };
 
-class MCTS {
+class MCTS : public Bandit {
   public:
     json params;
     A2CLearner a2c_agent;
@@ -55,6 +56,6 @@ class MCTS {
     std::shared_ptr<Node> select_expand();
     void backup(std::shared_ptr<Node> curr_node, double Q_val);
     void reset_policy_cache();
-    std::vector<double> policy(EnvWrapper env, std::vector<float> obs, bool ret_node=false);
+    std::vector<double> policy(int i, EnvWrapper env, std::vector<float> obs, bool ret_node=false);
 };
 #endif

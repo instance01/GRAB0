@@ -8,6 +8,7 @@
 #include "simple_thread_pool.hpp"
 #include "cfg.hpp"
 #include "lr_scheduler.hpp"
+#include "gradient_bandit.hpp"
 
 
 std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent) {
@@ -43,9 +44,18 @@ std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agen
   return std::make_pair(actions.length(), total_reward);
 }
 
-std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, MCTS mcts_agent, A2CLearner a2c_agent) {
+std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent) {
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
+
+  // TODO Based on config whether mcts or gradient bandit
+  std::string bandit_type = params["bandit_type"];
+  Bandit *mcts_agent;
+  if (bandit_type == "mcts") {
+    mcts_agent = new MCTS(orig_env, a2c_agent, params);
+  } else if (bandit_type == "grad") {
+    mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params);
+  }
 
   // TODO Make sure this is a good idea to init here.
   std::random_device rd;
@@ -58,7 +68,7 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, MCTS mcts_agen
   bool done = false;
   std::shared_ptr<Game> game = std::make_shared<Game>();
   for (int i = 0; i < horizon; ++i) {
-    auto mcts_action = mcts_agent.policy(env, state);
+    auto mcts_action = mcts_agent->policy(i, env, state);
 
     std::discrete_distribution<int> distribution(mcts_action.begin(), mcts_action.end());
     int sampled_action = distribution(generator);
@@ -82,6 +92,7 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, MCTS mcts_agen
   }
 
   std::cout << mcts_actions.size() << " " << std::flush;
+  delete mcts_agent;
   return game;
 }
 
@@ -105,7 +116,6 @@ std::pair<int, double> episode(
   TensorBoardLogger &writer,
   int n_run,
   EnvWrapper env,
-  MCTS mcts_agent,
   A2CLearner a2c_agent,
   int n_episode,
   ReplayBuffer replay_buffer,
@@ -118,14 +128,14 @@ std::pair<int, double> episode(
   int train_steps = params["train_steps"];
   int n_procs = params["n_procs"];
 
-  mcts_agent.reset_policy_cache();
+  // mcts_agent->reset_policy_cache();
 
   std::vector<int> actor_lengths;
 
   // Run self play games in n_procs parallel processes.
   auto pool = SimpleThreadPool(n_procs);
-  auto lambda = [env, params, mcts_agent, a2c_agent]() -> std::shared_ptr<Game> {
-    return run_actor(env, params, mcts_agent, a2c_agent);
+  auto lambda = [env, params, a2c_agent]() -> std::shared_ptr<Game> {
+    return run_actor(env, params, a2c_agent);
   };
   std::vector<Task*> tasks;
   for (int i = 0; i < n_actors; ++i) {
@@ -251,7 +261,6 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
     params["prioritized_sampling"]
   );
   auto a2c_agent = A2CLearner(params, env);
-  auto mcts_agent = MCTS(env, a2c_agent, params);
   LRScheduler *lr_scheduler;
   if (params["scheduler_class"] == "exp") {
     lr_scheduler = new ExponentialScheduler(
@@ -289,7 +298,6 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
         writer,
         n_run,
         env,
-        mcts_agent,
         a2c_agent,
         i,
         replay_buffer,

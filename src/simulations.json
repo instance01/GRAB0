@@ -451,5 +451,18 @@
         "dirichlet_alpha": 0.9,
         "dirichlet_frac": 0.5,
         "memory_capacity": 2000
+    },
+    "BANDITTEST": {
+        "base": "120",
+        "pb_c_init": 0.15,
+        "tough_ce": false,
+        "dirichlet_alpha": 0.9,
+        "dirichlet_frac": 0.5,
+        "memory_capacity": 2000,
+        "n_runs": 1,
+        "bandit_type": "grad",
+        "grad_bandit_alpha": 0.01,
+        "episodes": 500,
+        "n_actors": 10
     }
 }

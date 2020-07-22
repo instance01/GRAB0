@@ -49,6 +49,8 @@ json get_default(std::string base) {
       {"train_steps", 2000},  // 700000
       {"desired_eval_len", 8},
       {"n_desired_eval_len", 10},
+      {"bandit_type", "mcts"},  // mcts, grad
+      {"grad_bandit_alpha", 0.01},
 
       // Other
       {"reward_exponent", 1},
@@ -86,6 +88,8 @@ json get_default(std::string base) {
       {"scheduler_consecutive", true},
       {"use_weight_decay", false},
       {"weight_decay", .00001},
+      {"bandit_type", "mcts"},  // mcts, grad
+      {"grad_bandit_alpha", 0.01},
 
       // AlphaZero
       {"memory_capacity", 1000},
@@ -128,6 +132,8 @@ json get_default(std::string base) {
       {"scheduler_consecutive", false},
       {"use_weight_decay", false},
       {"weight_decay", .00001},
+      {"bandit_type", "mcts"},  // mcts, grad
+      {"grad_bandit_alpha", 0.01},
 
       // AlphaZero
       {"memory_capacity", 1000},

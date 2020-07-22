@@ -143,7 +143,7 @@ MCTS::reset_policy_cache() {
 }
 
 std::vector<double>
-MCTS::policy(EnvWrapper env, std::vector<float> obs, bool ret_node) {
+MCTS::policy(int i, EnvWrapper env, std::vector<float> obs, bool ret_node) {
   int n_actions = params["n_actions"];
   int n_iter = params["simulations"];
 
@@ -162,14 +162,14 @@ MCTS::policy(EnvWrapper env, std::vector<float> obs, bool ret_node) {
   std::random_device rd;
   std::mt19937 generator(rd());
   std::gamma_distribution<double> distribution(alpha, 1.);
-  for (int i = 0; i < n_actions; ++i) {
+  for (int j = 0; j < n_actions; ++j) {
     double noise = distribution(generator);
-    action_probs[0][i] = action_probs[0][i] * (1 - frac) + noise * frac;
+    action_probs[0][j] = action_probs[0][j] * (1 - frac) + noise * frac;
   }
 
   policy_net_cache[root_node] = action_probs;
 
-  for (int i = 0; i < n_iter; ++i) {
+  for (int j = 0; j < n_iter; ++j) {
     std::shared_ptr<Node> node = select_expand();
     torch::Tensor value;
     std::tie(std::ignore, value) = a2c_agent.predict_policy(node->torch_state);

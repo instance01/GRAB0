@@ -59,7 +59,7 @@ void SimpleThreadPool::add_task(Task *task) {
 }
 
 std::vector<std::shared_ptr<Game>> SimpleThreadPool::join() {
-  for (int i = 0; i < tasks.size(); ++i) {
+  for (std::size_t i = 0; i < tasks.size(); ++i) {
     semaphore->wait();
   }
 
