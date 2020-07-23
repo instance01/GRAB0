@@ -66,6 +66,8 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
   n_actions = params["n_actions"];
   n_iter = params["simulations"];
   horizon = params["horizon"];
+  double alpha = params["dirichlet_alpha"];
+  double frac = params["dirichlet_frac"];
 
   EnvWrapper env_ = *orig_env.clone();
 
@@ -80,6 +82,13 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
     torch::Tensor action_probs;
     std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({state});
     int action = action_probs.argmax().item<int>();
+
+    // Add Dirichlet noise.
+    std::gamma_distribution<double> distribution(alpha, 1.);
+    for (int j = 0; j < n_actions; ++j) {
+      double noise = distribution(generator);
+      action_probs[0][j] = action_probs[0][j] * (1 - frac) + noise * frac;
+    }
 
     float* action_probs_arr = action_probs.data_ptr<float>();
 
@@ -139,8 +148,5 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
     }
   }
 
-  // TODO Remove
-  if (i == 0 || i == 199)
-    std::cout << bandits[i].softmax() << std::endl;
   return bandits[i].softmax();
 }
