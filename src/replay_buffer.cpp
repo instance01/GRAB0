@@ -69,3 +69,13 @@ ReplayBuffer::sample() {
   }
   return buffer[idx];
 }
+
+std::shared_ptr<Game>
+ReplayBuffer::get_best() {
+  std::vector<double> rewards = get_rewards();
+  int idx = std::distance(
+      rewards.begin(),
+      std::max_element(rewards.begin(), rewards.end())
+  );
+  return buffer[idx];
+}

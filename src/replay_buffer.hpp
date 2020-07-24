@@ -14,9 +14,7 @@ class ReplayBuffer {
     std::mt19937 generator;
 
     ~ReplayBuffer() {};
-
     ReplayBuffer(int window_size, bool prioritized_sampling=false);
-
 
     int _uniform();
     int _prioritized(std::vector<double> rewards);
@@ -28,5 +26,6 @@ class ReplayBuffer {
     void add(std::shared_ptr<Game> game);
     std::vector<double> get_rewards();
     std::shared_ptr<Game> sample();
+    std::shared_ptr<Game> get_best();
 };
 #endif
