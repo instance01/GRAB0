@@ -3,6 +3,9 @@
 
 
 SingleGradientBandit::SingleGradientBandit(json params) {
+  std::random_device dev;
+  generator = std::mt19937(dev());
+
   n_actions = params["n_actions"];
   n_iter = params["simulations"];
 
@@ -63,9 +66,13 @@ SingleGradientBandit::update(std::vector<double> action_probs, int action, doubl
 }
 
 GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params) {
+  std::random_device dev;
+  generator = std::mt19937(dev());
+
   n_actions = params["n_actions"];
   n_iter = params["simulations"];
-  horizon = params["horizon"];
+  int horizon = params["horizon"];
+  horizon = std::min(horizon, orig_env.env->max_steps);
   double alpha = params["dirichlet_alpha"];
   double frac = params["dirichlet_frac"];
 
@@ -76,7 +83,8 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
   env = *orig_env.clone();
 
   std::vector<float> state = env_.reset();
-  for (int i = 0; i < horizon; ++i) {
+  int i = 0;
+  for (; i < horizon; ++i) {
     // Evaluate current state and predict action probabilities.
     // These are used for initializing the bandit in the next step.
     torch::Tensor action_probs;
@@ -106,6 +114,22 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
     if (done)
       break;
   }
+
+  // In case we evaluated a very good path, add missing bandits with random initialization.
+  std::uniform_real_distribution<double> distribution_(0.0, 1.0);
+  for (int j = 0; j < (horizon - i - 1); ++j) {
+    std::vector<double> vec(n_actions);
+    std::generate(
+        vec.begin(),
+        vec.end(),
+        [distribution_, this] () mutable { return distribution_(this->generator); }
+    );
+
+    // Create the bandit.
+    auto bandit = SingleGradientBandit(params);
+    bandit.H = vec;
+    bandits.push_back(bandit);
+  }
 }
 
 std::vector<double>
@@ -117,7 +141,6 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
     std::vector<std::vector<double>> actions_probs_arr;
 
     EnvWrapper env = *orig_env.clone();
-    env.reset();
 
     // TODO Hmm.. It could be that horizon is set HIGHER than the maximum horizon of the
     // environment. So, let's only loop until the size of bandits.
@@ -140,11 +163,16 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
         break;
     }
 
-    std::vector<double> cumulative_rewards(rewards.size(), 0.);
-    std::partial_sum(rewards.begin(), rewards.end(), cumulative_rewards.begin(), std::plus<double>());
+    std::vector<double> cumulative_rewards;
+    double curr_sum = 0;
+    for (std::vector<double>::reverse_iterator iter = rewards.rbegin(); iter != rewards.rend(); ++iter) {
+      curr_sum += *iter;
+      cumulative_rewards.push_back(curr_sum);
+    }
+    std::reverse(cumulative_rewards.begin(), cumulative_rewards.end());
 
     for (int m = 0; m < j - i; ++m) {
-      bandits[m].update(actions_probs_arr[m], actions[m], rewards[m]);
+      bandits[m + i].update(actions_probs_arr[m], actions[m], cumulative_rewards[m]);
     }
   }
 

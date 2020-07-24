@@ -19,7 +19,7 @@ class SingleGradientBandit {
     std::vector<double> action_rewards;
     std::vector<double> H;
     double alpha = 0.1;
-    std::default_random_engine generator;
+    std::mt19937 generator;
 
     SingleGradientBandit(json params);
 
@@ -35,6 +35,7 @@ class GradientBanditSearch : public Bandit {
     int n_actions;
     int n_iter;
     int horizon;
+    std::mt19937 generator;
 
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
