@@ -16,6 +16,7 @@ class Env {
     // For A2C. Just needs to be rough.
     std::vector<float> expected_mean;
     std::vector<float> expected_stddev;
+    int max_steps;
 
     virtual std::tuple<std::vector<float>, double, bool> step(int action) {return {};};
     virtual std::vector<float> reset() {return {};};

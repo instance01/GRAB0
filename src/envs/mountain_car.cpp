@@ -23,6 +23,7 @@ MtCarEnv::MtCarEnv(float goal_velocity) : goal_velocity(goal_velocity) {
   // State is already normalized well enough..
   expected_mean = {0., 0.};
   expected_stddev = {1., 1.};
+  max_steps = 200;
 }
 
 std::vector<float>

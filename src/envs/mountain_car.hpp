@@ -17,7 +17,6 @@ class MtCarEnv : public Env {
     float goal_position = 0.5;
     float force = 0.001;
     float gravity = 0.0025;
-    int max_steps = 200;
 
     // Variable
     float goal_velocity = 0;

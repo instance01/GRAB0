@@ -16,7 +16,6 @@ class GridWorldEnv : public Env {
 
     int width;
     int height;
-    int max_steps;
     int steps;
 
     // Due to predictably small size no need for hashing (unordered_set)

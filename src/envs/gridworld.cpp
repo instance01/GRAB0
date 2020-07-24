@@ -79,6 +79,7 @@ GridWorldEnv::reset() {
 
 std::tuple<std::vector<float>, double, bool>
 GridWorldEnv::step(int action) {
+  steps += 1;
   if (steps >= max_steps) {
     std::vector<float> obs = {(float) pos.first, (float) pos.second, (float) dir};
     auto ret = std::make_tuple(obs, 0, true);
@@ -88,7 +89,6 @@ GridWorldEnv::step(int action) {
   move(action);
   double reward = 0.;
   bool done = false;
-  steps += 1;
   if (pos.first == goal.first && pos.second == goal.second) {
     done = true;
     reward = 1. - .9 * (1. * steps / max_steps);
