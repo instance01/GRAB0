@@ -48,7 +48,7 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
 
-  // TODO Based on config whether mcts or gradient bandit
+  // TODO Creating a new bandit here every time succs..
   std::string bandit_type = params["bandit_type"];
   Bandit *mcts_agent;
   if (bandit_type == "mcts") {
@@ -65,13 +65,25 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
 
   std::string mcts_actions = "";
 
+  bool greedy = false;
+  if (params["use_eps_greedy_learning"]) {
+    std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
+    greedy = epsgreedy_distribution(generator) > .5;
+  }
+
   bool done = false;
   std::shared_ptr<Game> game = std::make_shared<Game>();
   for (int i = 0; i < horizon; ++i) {
     auto mcts_action = mcts_agent->policy(i, env, state);
 
-    std::discrete_distribution<int> distribution(mcts_action.begin(), mcts_action.end());
-    int sampled_action = distribution(generator);
+    int sampled_action;
+    if (greedy) {
+      auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
+      sampled_action = std::distance(mcts_action.begin(), max_el);
+    } else {
+      std::discrete_distribution<int> distribution(mcts_action.begin(), mcts_action.end());
+      sampled_action = distribution(generator);
+    }
     mcts_actions += std::to_string(sampled_action);
 
     torch::Tensor action_probs;
@@ -91,7 +103,8 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
       break;
   }
 
-  std::cout << mcts_actions.size() << " " << std::flush;
+  // std::cout << mcts_actions.size() << " " << std::flush;
+  // std::cout << mcts_actions << std::endl;
   delete mcts_agent;
   return game;
 }
@@ -118,7 +131,7 @@ std::pair<int, double> episode(
   EnvWrapper env,
   A2CLearner a2c_agent,
   int n_episode,
-  ReplayBuffer replay_buffer,
+  ReplayBuffer *replay_buffer,
   json params,
   LRScheduler *lr_scheduler,
   std::chrono::time_point<std::chrono::high_resolution_clock> start_time
@@ -127,8 +140,6 @@ std::pair<int, double> episode(
   int n_actors = params["n_actors"];
   int train_steps = params["train_steps"];
   int n_procs = params["n_procs"];
-
-  // mcts_agent->reset_policy_cache();
 
   std::vector<int> actor_lengths;
 
@@ -144,7 +155,6 @@ std::pair<int, double> episode(
     tasks.push_back(task);
   }
   std::vector<std::shared_ptr<Game>> games = pool.join();
-  std::cout << std::endl << "# Games: " << games.size() << std::endl;
 
   for (Task* task : tasks) {
     delete task;
@@ -153,13 +163,13 @@ std::pair<int, double> episode(
 
   for(auto game : games) {
     actor_lengths.push_back(game->states.size());
-    replay_buffer.add(std::move(game));
+    replay_buffer->add(std::move(game));
   }
   // TODO After this the games vector is unusable. We've moved it all (std::move).
 
   // Print debug information.
   std::cout << "REWARDS ";
-  auto rewards = replay_buffer.get_rewards();
+  auto rewards = replay_buffer->get_rewards();
   int size_ = rewards.size() - n_actors - 1;
   for (int i = rewards.size() - 1; i > size_; --i) {
     std::cout << rewards[i] << " ";
@@ -167,9 +177,9 @@ std::pair<int, double> episode(
   std::cout << std::endl;
 
   std::vector<double> max_action_probs;
-  size_ = replay_buffer.buffer.size() - n_actors - 1;
-  for (int i = replay_buffer.buffer.size() - 1; i > size_; --i) {
-    auto game = replay_buffer.buffer[i];
+  size_ = replay_buffer->buffer.size() - n_actors - 1;
+  for (int i = replay_buffer->buffer.size() - 1; i > size_; --i) {
+    auto game = replay_buffer->buffer[i];
     for (auto mcts_action : game->mcts_actions) {
       auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
       max_action_probs.push_back(*max_el);
@@ -186,18 +196,44 @@ std::pair<int, double> episode(
   std::vector<int> sample_lens;
   std::vector<double> losses;
 
+  std::random_device rd;
+  std::mt19937 generator(rd());
+  std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
+
+  bool debug_do_print = false;
+  bool debug_disable_print = true;
+  bool use_eps_greedy_learning = params["use_eps_greedy_learning"];
+
   a2c_agent.policy_net->train();
   for (int i = 0; i < train_steps; ++i) {
-    auto game = replay_buffer.sample();
+    std::shared_ptr<Game> game;
+
+    bool greedy = false;
+    if (use_eps_greedy_learning)
+      greedy = epsgreedy_distribution(generator) > .5;
+
+    if (greedy) {
+      game = replay_buffer->get_best();
+      debug_do_print = true;
+    } else {
+      game = replay_buffer->sample();
+    }
+
     auto loss = a2c_agent.update(game);
     std::string actions;
     for (auto mcts_action : game->mcts_actions) {
       auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
       actions += std::to_string(std::distance(mcts_action.begin(), max_el));
     }
+
+    if (debug_disable_print && debug_do_print) {
+      std::cout << "Learning with: " << actions << std::endl;
+      debug_disable_print = false;
+    }
     if (i % 10 == 0) {
       std::cout << "." << std::flush;
     }
+
     sample_lens.push_back(actions.size());
     losses.push_back(loss.item<double>());
   }
@@ -300,7 +336,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
         env,
         a2c_agent,
         i,
-        replay_buffer,
+        &replay_buffer,
         params,
         lr_scheduler,
         start_time
