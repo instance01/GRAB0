@@ -8,6 +8,8 @@ class Game {
     std::vector<double> rewards;
     std::vector<std::vector<double>> mcts_actions;
 
+    bool is_greedy = false;
+
     Game() {};
     Game(
       std::vector<std::vector<float>> states,
