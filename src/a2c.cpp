@@ -150,12 +150,13 @@ A2CLearner::update(std::shared_ptr<Game> game) {
   auto samples_tensor = vec_2d_as_tensor(
       flattened_states, torch::kFloat32, game->states.size(), game->states[0].size()
   );
-  torch::Tensor samples = normalize(samples_tensor);
+  torch::Tensor attached_samples = normalize(samples_tensor);
+  auto samples = attached_samples.detach_();
 
   auto normalized_returns = _calc_normalized_rewards(game->rewards);
 
   auto flattened_mcts = flatten_as_float(game->mcts_actions);
-  auto mcts_actions = vec_2d_as_tensor(
+  auto attached_mcts_actions = vec_2d_as_tensor(
       flattened_mcts, torch::kFloat32, game->mcts_actions.size(), game->mcts_actions[0].size()
   );
 
@@ -163,6 +164,7 @@ A2CLearner::update(std::shared_ptr<Game> game) {
   torch::Tensor action_probs;
   torch::Tensor values;
   std::tie(action_probs, values) = policy_net->forward(samples);
+  auto mcts_actions = attached_mcts_actions.detach_();
 
   // Calculate losses.
   torch::Tensor cross_entropy;
@@ -176,6 +178,7 @@ A2CLearner::update(std::shared_ptr<Game> game) {
         argmax_mcts_actions,
         F::CrossEntropyFuncOptions().reduction(torch::kSum));
   }
+  cross_entropy /= mcts_actions.size(0);
 
   torch::Tensor value_loss = F::smooth_l1_loss(
       values.reshape(-1),
@@ -186,7 +189,8 @@ A2CLearner::update(std::shared_ptr<Game> game) {
   torch::Tensor loss = cross_entropy + value_loss;
 
   policy_optimizer->zero_grad();
-  loss.backward();
+  cross_entropy.backward({}, true, false);
+  value_loss.backward();
   policy_optimizer->step();
 
   // TODO Remove. Hacky way of updating weights.
