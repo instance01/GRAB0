@@ -72,10 +72,30 @@ ReplayBuffer::sample() {
 
 std::shared_ptr<Game>
 ReplayBuffer::get_best() {
+  // Get best greedy game.
   std::vector<double> rewards = get_rewards();
+  std::vector<int> indices;
+  std::vector<double> rewards_filtered;
+
+  for (int i = 0; i < buffer.size(); ++i) {
+    if (buffer[i]->is_greedy) {
+      rewards_filtered.push_back(rewards[i]);
+      indices.push_back(i);
+    }
+  }
+
+  bool no_greedy_found = indices.size() == 0;
+
+  if (no_greedy_found)
+    rewards_filtered = rewards;
+
   int idx = std::distance(
-      rewards.begin(),
-      std::max_element(rewards.begin(), rewards.end())
+      rewards_filtered.begin(),
+      std::max_element(rewards_filtered.begin(), rewards_filtered.end())
   );
-  return buffer[idx];
+
+  if (no_greedy_found)
+    return buffer[idx];
+
+  return buffer[indices[idx]];
 }
