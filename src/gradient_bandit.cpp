@@ -75,6 +75,8 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
   horizon = std::min(horizon, orig_env.env->max_steps);
   double alpha = params["dirichlet_alpha"];
   double frac = params["dirichlet_frac"];
+  bool do_init_random = params["grad_bandit_init_random"];
+  reward_power = params["grad_bandit_reward_power"];
 
   EnvWrapper env_ = *orig_env.clone();
 
@@ -115,15 +117,18 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
       break;
   }
 
-  // In case we evaluated a very good path, add missing bandits with random initialization.
+  // In case we evaluated a very good path, add missing bandits (optionally with random
+  // initialization).
   std::uniform_real_distribution<double> distribution_(0.0, 1.0);
-  for (int j = 0; j < (horizon - i - 1); ++j) {
-    std::vector<double> vec(n_actions);
-    std::generate(
-        vec.begin(),
-        vec.end(),
-        [distribution_, this] () mutable { return distribution_(this->generator); }
-    );
+  for (int j = 0; j < (horizon - i); ++j) {
+    std::vector<double> vec{0.33, 0.33, 0.33};
+    if (do_init_random) {
+      std::generate(
+          vec.begin(),
+          vec.end(),
+          [distribution_, this] () mutable { return distribution_(this->generator); }
+      );
+    }
 
     // Create the bandit.
     auto bandit = SingleGradientBandit(params);
@@ -142,8 +147,8 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
 
     EnvWrapper env = *orig_env.clone();
 
-    // TODO Hmm.. It could be that horizon is set HIGHER than the maximum horizon of the
-    // environment. So, let's only loop until the size of bandits.
+    // It could be that horizon is set higher than the maximum horizon of the environment.
+    // So let's only loop until the size of bandits.
     int j = i;
     for (; j < bandits.size(); ++j) {
       std::vector<double> action_probs;
@@ -157,10 +162,15 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
       bool done;
       std::tie(std::ignore, reward, done) = env.step(action);
 
+      reward = std::pow(reward, reward_power);
       rewards.push_back(reward);
 
-      if (done)
+      if (done) {
+        // Since we break, the last ++j of the loop is not executed.
+        // To keep things consistent later on, let's do it manually.
+        j += 1;
         break;
+      }
     }
 
     std::vector<double> cumulative_rewards;
@@ -171,7 +181,9 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
     }
     std::reverse(cumulative_rewards.begin(), cumulative_rewards.end());
 
-    for (int m = 0; m < j - i; ++m) {
+    // This had an off by one mistake. Refer to j += 1 a few lines above.
+    int size = std::min((int) bandits.size() - 1, j - i);
+    for (int m = 0; m < size; ++m) {
       bandits[m + i].update(actions_probs_arr[m], actions[m], cumulative_rewards[m]);
     }
   }

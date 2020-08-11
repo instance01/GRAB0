@@ -51,7 +51,11 @@ json get_default(std::string base) {
       {"n_desired_eval_len", 10},
       {"bandit_type", "mcts"},  // mcts, grad
       {"grad_bandit_alpha", 0.01},
-      {"use_eps_greedy_learning", false},
+      {"use_eps_greedy_learning", true},
+      {"eps_greedy_epsilon_decay_factor_train", 0.995},
+      {"eps_greedy_epsilon_decay_factor_actor", 0.995},
+      {"grad_bandit_init_random", true},
+      {"grad_bandit_reward_power", 1},
 
       // Other
       {"reward_exponent", 1},
@@ -101,7 +105,11 @@ json get_default(std::string base) {
       {"n_desired_eval_len", 10},
       {"bandit_type", "mcts"},  // mcts, grad
       {"grad_bandit_alpha", 0.01},
-      {"use_eps_greedy_learning", false},
+      {"use_eps_greedy_learning", true},
+      {"eps_greedy_epsilon_decay_factor_train", 0.995},
+      {"eps_greedy_epsilon_decay_factor_actor", 0.995},
+      {"grad_bandit_init_random", true},
+      {"grad_bandit_reward_power", 1},
 
       // Other
       {"reward_exponent", 1},
@@ -146,7 +154,11 @@ json get_default(std::string base) {
       {"n_desired_eval_len", 100},
       {"bandit_type", "mcts"},  // mcts, grad
       {"grad_bandit_alpha", 0.01},
-      {"use_eps_greedy_learning", false},
+      {"use_eps_greedy_learning", true},
+      {"eps_greedy_epsilon_decay_factor_train", 0.995},
+      {"eps_greedy_epsilon_decay_factor_actor", 0.995},
+      {"grad_bandit_init_random", true},
+      {"grad_bandit_reward_power", 1},
 
       // Other
       {"reward_exponent", 1},

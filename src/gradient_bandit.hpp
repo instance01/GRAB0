@@ -36,6 +36,7 @@ class GradientBanditSearch : public Bandit {
     int n_iter;
     int horizon;
     std::mt19937 generator;
+    int reward_power;
 
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
