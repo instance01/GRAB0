@@ -4,7 +4,6 @@
 #include <torch/torch.h>
 #include "a2c.hpp"
 #include "game.hpp"
-#include "lr_scheduler.hpp"
 #include "gradient_bandit.hpp"
 
 
@@ -41,27 +40,6 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
   }
 
   auto a2c_agent = A2CLearner(params, orig_env);
-  LRScheduler *lr_scheduler;
-  if (params["scheduler_class"] == "exp") {
-    lr_scheduler = new ExponentialScheduler(
-        params["scheduler_factor"],
-        params["scheduler_min_lr"]
-    );
-  } else if (params["scheduler_class"] == "step") {
-    lr_scheduler = new StepScheduler(
-        params["scheduler_steps"],
-        params["scheduler_factor"],
-        params["scheduler_min_lr"]
-    );
-  } else if (params["scheduler_class"] == "reduce_eval") {
-    lr_scheduler = new ReduceOnGoodEval(
-        params["scheduler_factor"],
-        params["scheduler_min_good_eval"],
-        params["scheduler_min_n_good_evals"],
-        params["scheduler_min_lr"],
-        params["scheduler_consecutive"]
-    );
-  }
 
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
