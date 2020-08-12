@@ -9,7 +9,7 @@
 #include <torch/nn/modules/container/any.h>
 #include <torch/nn/modules/container/sequential.h>
 #include <torch/nn/functional.h>
-#include <torch/optim/adam.h>
+#include <torch/optim/optimizer.h>
 #include <c10/core/DeviceType.h>
 
 #include "game.hpp"
@@ -44,7 +44,7 @@ class A2CLearner {
 
     json params;
     A2CNet policy_net;
-    std::shared_ptr<torch::optim::Adam> policy_optimizer;
+    std::shared_ptr<torch::optim::Optimizer> policy_optimizer;
 
     A2CLearner() {};
     A2CLearner(json params, EnvWrapper &env);

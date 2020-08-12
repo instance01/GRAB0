@@ -9,7 +9,9 @@
 #include <torch/nn/modules/container/any.h>
 #include <torch/nn/modules/container/sequential.h>
 #include <torch/nn/functional.h>
+#include <torch/optim/optimizer.h>
 #include <torch/optim/adam.h>
+#include <torch/optim/sgd.h>
 #include <c10/core/DeviceType.h>
 
 #include "a2c.hpp"
@@ -69,13 +71,18 @@ A2CLearner::A2CLearner(json params, EnvWrapper &env) : params(params) {
   );
 
   double lr = params["alpha"];
-  auto opt = torch::optim::AdamOptions(lr);
-  if (params["use_weight_decay"])
-    opt.weight_decay(params["weight_decay"]);
-  policy_optimizer = std::make_shared<torch::optim::Adam>(
-      policy_net->parameters(),
-      opt
-  );
+
+  std::string optimizer_class = params["optimizer_class"];
+  if (optimizer_class == "adam") {
+    auto opt = torch::optim::AdamOptions(lr);
+    if (params["use_weight_decay"])
+      opt.weight_decay(params["weight_decay"]);
+    policy_optimizer = std::make_shared<torch::optim::Adam>(policy_net->parameters(), opt);
+  } else if (optimizer_class == "sgd") {
+    auto opt = torch::optim::SGDOptions(lr);
+    opt.momentum(params["sgd_momentum"]);
+    policy_optimizer = std::make_shared<torch::optim::SGD>(policy_net->parameters(), opt);
+  }
 
   expected_mean_tensor = torch::from_blob(
       env.env->expected_mean.data(),

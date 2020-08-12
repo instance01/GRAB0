@@ -39,6 +39,8 @@ json get_default(std::string base) {
       {"scheduler_consecutive", true},  // For: reduce_eval
       {"use_weight_decay", false},
       {"weight_decay", .00001},
+      {"optimizer_class", "adam"},  // adam, sgd
+      {"sgd_momentum", .9},
 
       // AlphaZero
       {"memory_capacity", 1000},
@@ -93,6 +95,8 @@ json get_default(std::string base) {
       {"scheduler_consecutive", true},  // For: reduce_eval
       {"use_weight_decay", false},
       {"weight_decay", .00001},
+      {"optimizer_class", "adam"},  // adam, sgd
+      {"sgd_momentum", .9},
 
       // AlphaZero
       {"memory_capacity", 1000},
@@ -142,6 +146,8 @@ json get_default(std::string base) {
       {"scheduler_consecutive", false},  // For: reduce_eval
       {"use_weight_decay", false},
       {"weight_decay", .00001},
+      {"optimizer_class", "adam"},  // adam, sgd
+      {"sgd_momentum", .9},
 
       // AlphaZero
       {"memory_capacity", 1000},
@@ -191,6 +197,8 @@ json get_default(std::string base) {
       {"scheduler_consecutive", true},  // For: reduce_eval
       {"use_weight_decay", false},
       {"weight_decay", .00001},
+      {"optimizer_class", "adam"},  // adam, sgd
+      {"sgd_momentum", .9},
 
       // AlphaZero
       {"memory_capacity", 2000},
