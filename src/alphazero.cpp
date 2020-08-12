@@ -10,6 +10,7 @@
 #include "lr_scheduler.hpp"
 #include "gradient_bandit.hpp"
 #include "fuzz_bandit.hpp"
+#include "util.hpp"
 
 
 std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent) {
@@ -112,22 +113,6 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
   // std::cout << mcts_actions << std::endl;
   delete mcts_agent;
   return game;
-}
-
-// TODO Move median und mean to util.
-
-template<typename T>
-T median(std::vector<T> &v)
-{
-  size_t n = v.size() / 2;
-  nth_element(v.begin(), v.begin()+n, v.end());
-  return v[n];
-}
-
-template<typename T>
-T mean(std::vector<T> &v)
-{
-  return std::accumulate(v.begin(), v.end(), T{} * 0) / v.size();
 }
 
 std::pair<int, double> episode(

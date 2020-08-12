@@ -4,6 +4,20 @@
 
 
 template<typename T>
+T median(std::vector<T> &v)
+{
+  size_t n = v.size() / 2;
+  nth_element(v.begin(), v.begin()+n, v.end());
+  return v[n];
+}
+
+template<typename T>
+T mean(std::vector<T> &v)
+{
+  return std::accumulate(v.begin(), v.end(), T{} * 0) / v.size();
+}
+
+template<typename T>
 std::vector<T> flatten(const std::vector<std::vector<T>> &orig)
 {
   std::vector<T> ret;
