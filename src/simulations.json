@@ -980,5 +980,61 @@
         "base": "BT20",
         "schedule_alpha": true,
         "scheduler_factor": 0.99
+    },
+    "161": {
+        "base": "BT20",
+        "optimizer_class": "sgd"
+    },
+    "162": {
+        "base": "BT20",
+        "simulations": 3000
+    },
+    "163": {
+        "base": "BT20",
+        "alpha": 0.0001
+    },
+    "164": {
+        "base": "BT20",
+        "alpha": 0.00001
+    },
+    "165": {
+        "base": "BT20",
+        "episodes": 300
+    },
+    "166": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true
+    },
+    "167": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "scheduler_factor": 0.99
+    },
+    "168": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "optimizer_class": "sgd"
+    },
+    "169": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 3000
+    },
+    "170": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "alpha": 0.0001
+    },
+    "171": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "alpha": 0.00001
+    },
+    "172": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "episodes": 300
     }
 }
