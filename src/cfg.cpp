@@ -31,12 +31,12 @@ json get_default(std::string base) {
       {"net_architecture", {64, 64}},
       {"schedule_alpha", false},
       {"scheduler_class", "exp"},  // exp, step, reduce_eval
-      {"scheduler_factor", .995},
-      {"scheduler_min_lr", .000001},
-      {"scheduler_steps", {100, 200}},
-      {"scheduler_min_good_eval", -120.0},
-      {"scheduler_min_n_good_evals", 15},
-      {"scheduler_consecutive", true},
+      {"scheduler_factor", .995},  // For: exp, step, reduce_eval
+      {"scheduler_min_lr", .000001},  // For: exp, step, reduce_eval
+      {"scheduler_steps", {100, 200}},  // For: step
+      {"scheduler_min_good_eval", -120.0},  // For: reduce_eval
+      {"scheduler_min_n_good_evals", 15},  // For: reduce_eval
+      {"scheduler_consecutive", true},  // For: reduce_eval
       {"use_weight_decay", false},
       {"weight_decay", .00001},
 
@@ -85,12 +85,12 @@ json get_default(std::string base) {
       {"net_architecture", {64, 64}},
       {"schedule_alpha", true},
       {"scheduler_class", "exp"},  // exp, step, reduce_eval
-      {"scheduler_factor", .995},
-      {"scheduler_min_lr", .000001},
-      {"scheduler_steps", {100, 200}},
-      {"scheduler_min_good_eval", -120.0},
-      {"scheduler_min_n_good_evals", 20},
-      {"scheduler_consecutive", true},
+      {"scheduler_factor", .995},  // For: exp, step, reduce_eval
+      {"scheduler_min_lr", .000001},  // For: exp, step, reduce_eval
+      {"scheduler_steps", {100, 200}},  // For: step
+      {"scheduler_min_good_eval", -120.0},  // For: reduce_eval
+      {"scheduler_min_n_good_evals", 20},  // For: reduce_eval
+      {"scheduler_consecutive", true},  // For: reduce_eval
       {"use_weight_decay", false},
       {"weight_decay", .00001},
 
@@ -134,12 +134,12 @@ json get_default(std::string base) {
       {"net_architecture", {64, 64}},
       {"schedule_alpha", true},
       {"scheduler_class", "reduce_eval"},  // exp, step, reduce_eval
-      {"scheduler_factor", .5},
-      {"scheduler_min_lr", .000001},
-      {"scheduler_steps", {100, 200}},
-      {"scheduler_min_good_eval", -100.0},
-      {"scheduler_min_n_good_evals", 10},
-      {"scheduler_consecutive", false},
+      {"scheduler_factor", .5},  // For: exp, step, reduce_eval
+      {"scheduler_min_lr", .000001},  // For: exp, step, reduce_eval
+      {"scheduler_steps", {100, 200}},  // For: step
+      {"scheduler_min_good_eval", -100.0},  // For: reduce_eval
+      {"scheduler_min_n_good_evals", 10},  // For: reduce_eval
+      {"scheduler_consecutive", false},  // For: reduce_eval
       {"use_weight_decay", false},
       {"weight_decay", .00001},
 
@@ -157,6 +157,55 @@ json get_default(std::string base) {
       {"use_eps_greedy_learning", true},
       {"eps_greedy_epsilon_decay_factor_train", 0.995},
       {"eps_greedy_epsilon_decay_factor_actor", 0.995},
+      {"grad_bandit_init_random", true},
+      {"grad_bandit_reward_power", 1},
+
+      // Other
+      {"reward_exponent", 1},
+    }},
+    {"BT20", {
+      {"n_actions", 3},
+      {"n_input_features", 3},
+      {"n_runs", 10},
+
+      // MCTS
+      {"gamma", .99},
+      {"simulations", 2000},
+      {"horizon", 400},
+      {"dirichlet_alpha", .3},
+      {"dirichlet_frac", .3},
+      {"pb_c_base", 19000},
+      {"pb_c_init", .3},
+      {"tough_ce", true},
+
+      // A2C
+      {"alpha", .0005},
+      {"net_architecture", {64, 64}},
+      {"schedule_alpha", false},
+      {"scheduler_class", "exp"},  // exp, step, reduce_eval
+      {"scheduler_factor", .995},  // For: exp, step, reduce_eval
+      {"scheduler_min_lr", .000001},  // For: exp, step, reduce_eval
+      {"scheduler_steps", {100, 200}},  // For: step
+      {"scheduler_min_good_eval", -120.0},  // For: reduce_eval
+      {"scheduler_min_n_good_evals", 20}, // For: reduce_eval
+      {"scheduler_consecutive", true},  // For: reduce_eval
+      {"use_weight_decay", false},
+      {"weight_decay", .00001},
+
+      // AlphaZero
+      {"memory_capacity", 2000},
+      {"prioritized_sampling", false},
+      {"episodes", 200},
+      {"n_procs", 8},
+      {"n_actors", 20},  // 5000
+      {"train_steps", 4000},  // 700000
+      {"desired_eval_len", 8},
+      {"n_desired_eval_len", 10},
+      {"bandit_type", "grad"},  // mcts, grad
+      {"grad_bandit_alpha", 0.1},
+      {"use_eps_greedy_learning", true},
+      {"eps_greedy_epsilon_decay_factor_train", 0.99},
+      {"eps_greedy_epsilon_decay_factor_actor", 0.99},
       {"grad_bandit_init_random", true},
       {"grad_bandit_reward_power", 1},
 

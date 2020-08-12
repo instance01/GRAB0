@@ -968,5 +968,17 @@
         "eps_greedy_epsilon_decay_factor_train": 0.99,
         "eps_greedy_epsilon_decay_factor_actor": 0.99,
         "schedule_alpha": false
+    },
+    "158": {
+        "base": "BT20"
+    },
+    "159": {
+        "base": "BT20",
+        "schedule_alpha": true
+    },
+    "160": {
+        "base": "BT20",
+        "schedule_alpha": true,
+        "scheduler_factor": 0.99
     }
 }
