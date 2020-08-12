@@ -13,6 +13,7 @@ SingleGradientBandit::SingleGradientBandit(json params) {
   action_visits = std::vector<int>(n_actions, 0);
   action_rewards = std::vector<double>(n_actions, 0);
   mean_reward = 0;
+  prob_action = std::vector<double>(n_actions, 0);
 
   // H is initialized from a2c.
   H = std::vector<double>(n_actions, 0);
@@ -21,8 +22,6 @@ SingleGradientBandit::SingleGradientBandit(json params) {
 
 std::vector<double>
 SingleGradientBandit::softmax() {
-  std::vector<double> prob_action(n_actions, 0);
-
   double maxH = *std::max_element(H.begin(), H.end());
 
   double sum = 0;
@@ -39,7 +38,7 @@ SingleGradientBandit::softmax() {
 
 int
 SingleGradientBandit::sample(std::vector<double> action_probs) {
-  std::discrete_distribution<int> distribution(action_probs.begin(), action_probs.end());
+  distribution.param({action_probs.begin(), action_probs.end()});
   return distribution(generator);
 }
 

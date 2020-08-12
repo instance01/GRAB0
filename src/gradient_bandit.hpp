@@ -21,6 +21,9 @@ class SingleGradientBandit {
     double alpha = 0.1;
     std::mt19937 generator;
 
+    std::vector<double> prob_action;
+    std::discrete_distribution<int> distribution;
+
     SingleGradientBandit(json params);
 
     std::vector<double> softmax();
