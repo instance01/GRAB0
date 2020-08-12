@@ -9,6 +9,7 @@
 #include "cfg.hpp"
 #include "lr_scheduler.hpp"
 #include "gradient_bandit.hpp"
+#include "fuzz_bandit.hpp"
 
 
 std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent) {
@@ -32,6 +33,7 @@ std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agen
     //for (int i = 0; i < action_probs.sizes()[1]; ++i)
     //  std::cout << std::ceil(xx[i] * 100.0) / 100.0 << " ";
     //std::cout << "(" << std::ceil(val.item<float>() * 100.0) / 100.0 << ") # ";
+    //std::cout << "| ";
 
     double reward;
     std::tie(state, reward, done) = env.step(action);
@@ -44,7 +46,7 @@ std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agen
   return std::make_pair(actions.length(), total_reward);
 }
 
-std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent) {
+std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode) {
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
 
@@ -65,14 +67,17 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
 
   std::string mcts_actions = "";
 
+  float eps_greedy_epsilon_decay_factor = params["eps_greedy_epsilon_decay_factor_actor"];
+  float epsilon = std::pow(eps_greedy_epsilon_decay_factor, n_episode);
   bool greedy = false;
   if (params["use_eps_greedy_learning"]) {
     std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
-    greedy = epsgreedy_distribution(generator) > .5;
+    greedy = epsgreedy_distribution(generator) > epsilon;
   }
 
   bool done = false;
   std::shared_ptr<Game> game = std::make_shared<Game>();
+  game->is_greedy = greedy;
   for (int i = 0; i < horizon; ++i) {
     auto mcts_action = mcts_agent->policy(i, env, state);
 
@@ -145,8 +150,8 @@ std::pair<int, double> episode(
 
   // Run self play games in n_procs parallel processes.
   auto pool = SimpleThreadPool(n_procs);
-  auto lambda = [env, params, a2c_agent]() -> std::shared_ptr<Game> {
-    return run_actor(env, params, a2c_agent);
+  auto lambda = [env, params, a2c_agent, n_episode]() -> std::shared_ptr<Game> {
+    return run_actor(env, params, a2c_agent, n_episode);
   };
   std::vector<Task*> tasks;
   for (int i = 0; i < n_actors; ++i) {
@@ -201,8 +206,10 @@ std::pair<int, double> episode(
   std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
 
   bool debug_do_print = false;
-  bool debug_disable_print = true;
   bool use_eps_greedy_learning = params["use_eps_greedy_learning"];
+  float eps_greedy_epsilon_decay_factor = params["eps_greedy_epsilon_decay_factor_train"];
+
+  float epsilon = std::pow(eps_greedy_epsilon_decay_factor, n_episode);
 
   a2c_agent.policy_net->train();
   for (int i = 0; i < train_steps; ++i) {
@@ -210,26 +217,27 @@ std::pair<int, double> episode(
 
     bool greedy = false;
     if (use_eps_greedy_learning)
-      greedy = epsgreedy_distribution(generator) > .5;
+      greedy = epsgreedy_distribution(generator) > epsilon;
 
     if (greedy) {
       game = replay_buffer->get_best();
-      debug_do_print = true;
     } else {
       game = replay_buffer->sample();
     }
 
     auto loss = a2c_agent.update(game);
+
     std::string actions;
     for (auto mcts_action : game->mcts_actions) {
       auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
       actions += std::to_string(std::distance(mcts_action.begin(), max_el));
     }
 
-    if (debug_disable_print && debug_do_print) {
-      std::cout << "Learning with: " << actions << std::endl;
-      debug_disable_print = false;
+    if (greedy && !debug_do_print) {
+      debug_do_print = true;
+      std::cout << "first greedy action " << actions << " |eps " << epsilon << std::endl;
     }
+
     if (i % 10 == 0) {
       std::cout << "." << std::flush;
     }
@@ -364,6 +372,13 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
 }
 
 int main(int argc, char* argv[]) {
+  if (argc < 3) {
+    std::cout << argv[0] << " <game> <param_identifier> [mode]" << std::endl;
+    std::cout << "<game> can be 5x5, 8x8, 16x16, mtcar." << std::endl;
+    std::cout << "<param_identifier> can be any key from simulations.json, e.g. 110 or FUZZTEST5." << std::endl;
+    std::cout << "[mode] can be 'fuzz', used for debugging the gradient bandit." << std::endl;
+    return 1;
+  }
   std::string game(argv[1]);
   std::string param_num(argv[2]);
   std::cout << "Running with parameters: " << game << " " << param_num << std::endl;
@@ -375,6 +390,14 @@ int main(int argc, char* argv[]) {
 
   EnvWrapper env = EnvWrapper();
   env.init(game, params);
+
+  if (argc > 3) {
+    std::string mode(argv[3]);
+    if (mode == "fuzz") {
+      fuzz_bandit(params, env);
+      return 0;
+    }
+  }
 
   TensorBoardLogger writer(gen_log_filename(game, param_num).c_str());
 
