@@ -115,6 +115,60 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
   return game;
 }
 
+float schedule_alpha(
+    json params,
+    A2CLearner a2c_agent,
+    LRScheduler *lr_scheduler,
+    double total_reward,
+    int n_episode) {
+  float lr = 0;
+  if (params["optimizer_class"] == "adam") {
+    // The decision to only use the first param group might be dubious.
+    // Keep that in mind. For now it is fine, I checked.
+    auto& options = static_cast<torch::optim::AdamOptions&>(
+        a2c_agent.policy_optimizer->param_groups()[0].options()
+    );
+    lr = options.lr();
+    if (params["schedule_alpha"]) {
+      options.lr(lr_scheduler->step(lr, n_episode, total_reward));
+    }
+  }
+  // TODO Deal with SGD at some point.
+  return lr;
+}
+
+void write_tensorboard_kpis(
+    TensorBoardLogger &writer,
+    double mcts_confidence_median,
+    int n_run,
+    int n_episode,
+    int eval_length,
+    double total_reward,
+    const std::vector<int>& actor_lengths,
+    const std::vector<int>& sample_lens,
+    const std::vector<double>& losses,
+    float lr,
+    double avg_loss) {
+  writer.add_scalar("Eval/MCTS_Confidence/" + std::to_string(n_run), n_episode, (float) mcts_confidence_median);
+
+  writer.add_scalar("Eval/Length/" + std::to_string(n_run), n_episode, (float) eval_length);
+  writer.add_scalar("Eval/Reward/" + std::to_string(n_run), n_episode, total_reward);
+  writer.add_histogram(
+      "Actor/Sample_length/" + std::to_string(n_run), n_episode, actor_lengths
+  );
+  writer.add_histogram(
+      "Train/Samples/" + std::to_string(n_run), n_episode, sample_lens
+  );
+  writer.add_histogram(
+      "Train/Loss/" + std::to_string(n_run), n_episode, losses
+  );
+
+  std::cout << "LR " << lr << std::endl;
+
+  writer.add_scalar("Train/LearningRate/" + std::to_string(n_run), n_episode, lr);
+  writer.add_scalar("Train/AvgLoss/" + std::to_string(n_run), n_episode, avg_loss);
+}
+
 std::pair<int, double> episode(
   TensorBoardLogger &writer,
   int n_run,
@@ -180,7 +234,6 @@ std::pair<int, double> episode(
   auto mcts_confidence_mean = mean<double>(max_action_probs);
   auto mcts_confidence_median = median<double>(max_action_probs);
   std::cout << "CONFIDENCE " << mcts_confidence_mean << " " << mcts_confidence_median << std::endl;
-  writer.add_scalar("Eval/MCTS_Confidence/" + std::to_string(n_run), n_episode, (float) mcts_confidence_median);
 
   // Train network after self play.
   std::vector<int> sample_lens;
@@ -247,35 +300,20 @@ std::pair<int, double> episode(
   double total_reward;
   std::tie(eval_length, total_reward) = evaluate(env, params, a2c_agent);
 
-  if (params["optimizer_class"] == "adam") {
-    // The decision to only use the first param group might be dubious.
-    // Keep that in mind. For now it is fine, I checked.
-    auto& options = static_cast<torch::optim::AdamOptions&>(
-        a2c_agent.policy_optimizer->param_groups()[0].options()
-    );
-    auto lr = options.lr();
-    if (params["schedule_alpha"]) {
-      options.lr(lr_scheduler->step(lr, n_episode, total_reward));
-    }
-  }
+  float lr = schedule_alpha(params, a2c_agent, lr_scheduler, total_reward, n_episode);
 
-  writer.add_scalar("Eval/Length/" + std::to_string(n_run), n_episode, (float) eval_length);
-  writer.add_scalar("Eval/Reward/" + std::to_string(n_run), n_episode, total_reward);
-  writer.add_histogram(
-      "Actor/Sample_length/" + std::to_string(n_run), n_episode, actor_lengths
-  );
-  writer.add_histogram(
-      "Train/Samples/" + std::to_string(n_run), n_episode, sample_lens
-  );
-  writer.add_histogram(
-      "Train/Loss/" + std::to_string(n_run), n_episode, losses
-  );
-
-  std::cout << "LR " << lr << std::endl;
-
-  writer.add_scalar("Train/LearningRate/" + std::to_string(n_run), n_episode, lr);
-  writer.add_scalar("Train/AvgLoss/" + std::to_string(n_run), n_episode, avg_loss);
-
+  write_tensorboard_kpis(
+    writer,
+    mcts_confidence_median,
+    n_run,
+    n_episode,
+    eval_length,
+    total_reward,
+    actor_lengths,
+    sample_lens,
+    losses,
+    lr,
+    avg_loss);
   std::cout << std::endl;
 
   return {eval_length, total_reward};
@@ -319,8 +357,8 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
   int desired_eval_len = params["desired_eval_len"];
   int n_desired_eval_len = params["n_desired_eval_len"];
 
-  int eval_len;
-  double total_reward;
+  int eval_len = 0;
+  double total_reward = 0;
   int i = 0;
   //std::vector<double> rewards;
   for (; i < params["episodes"]; ++i) {
