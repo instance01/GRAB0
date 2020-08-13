@@ -1004,37 +1004,99 @@
     "166": {
         "base": "BT20",
         "n_input_features": 2,
-        "schedule_alpha": true
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     },
     "167": {
         "base": "BT20",
         "n_input_features": 2,
         "schedule_alpha": true,
-        "scheduler_factor": 0.99
+        "scheduler_factor": 0.99,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     },
     "168": {
         "base": "BT20",
         "n_input_features": 2,
-        "optimizer_class": "sgd"
+        "optimizer_class": "sgd",
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     },
     "169": {
         "base": "BT20",
         "n_input_features": 2,
-        "simulations": 3000
+        "simulations": 3000,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     },
     "170": {
         "base": "BT20",
         "n_input_features": 2,
-        "alpha": 0.0001
+        "alpha": 0.0001,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     },
     "171": {
         "base": "BT20",
         "n_input_features": 2,
-        "alpha": 0.00001
+        "alpha": 0.00001,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     },
     "172": {
         "base": "BT20",
         "n_input_features": 2,
-        "episodes": 300
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
+    },
+    "173": {
+        "base": "BT20",
+        "n_input_features": 2,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "eps_greedy_epsilon_decay_factor_train": 0.998,
+        "eps_greedy_epsilon_decay_factor_actor": 0.998,
+        "episodes": 400
+    },
+    "174": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 4000,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     }
 }
