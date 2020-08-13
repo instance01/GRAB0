@@ -247,14 +247,16 @@ std::pair<int, double> episode(
   double total_reward;
   std::tie(eval_length, total_reward) = evaluate(env, params, a2c_agent);
 
-  // The decision to only use the first param group might be dubious.
-  // Keep that in mind. For now it is fine, I checked.
-  auto& options = static_cast<torch::optim::AdamOptions&>(
-      a2c_agent.policy_optimizer->param_groups()[0].options()
-  );
-  auto lr = options.lr();
-  if (params["schedule_alpha"]) {
-    options.lr(lr_scheduler->step(lr, n_episode, total_reward));
+  if (params["optimizer_class"] == "adam") {
+    // The decision to only use the first param group might be dubious.
+    // Keep that in mind. For now it is fine, I checked.
+    auto& options = static_cast<torch::optim::AdamOptions&>(
+        a2c_agent.policy_optimizer->param_groups()[0].options()
+    );
+    auto lr = options.lr();
+    if (params["schedule_alpha"]) {
+      options.lr(lr_scheduler->step(lr, n_episode, total_reward));
+    }
   }
 
   writer.add_scalar("Eval/Length/" + std::to_string(n_run), n_episode, (float) eval_length);
