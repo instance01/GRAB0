@@ -14,7 +14,7 @@ Bad = B; Ok = K; Good = G
 | BT19 | | | No | A few good evals. |
 | BT20 | | | Yes | Excellent solutions and no bad evals. 4 runs, all perfect. |
 | BT21 | | | Yes | Excellent solutions, but quite often bad evals. In all 4 runs. |
-| 158 | `Aug12-12:36:52-687-goshenit.cip.ifi.lmu.de-16x16-158` | | | |
+| 158 | `Aug12-12:36:52-687-goshenit.cip.ifi.lmu.de-16x16-158` | | | From here on `game=16x16`. |
 | 159 | `Aug12-12:26:14-453-heliodor.cip.ifi.lmu.de-16x16-159` | | | |
 | 160 | `Aug12-12:23:39-808-danburit.cip.ifi.lmu.de-16x16-160` | | | |
 | 161 | `Aug12-16:13:19-139-petalit.cip.ifi.lmu.de-16x16-161` | | | |
@@ -22,7 +22,7 @@ Bad = B; Ok = K; Good = G
 | 163 | `Aug12-21:26:29-302-zirkon.cip.ifi.lmu.de-16x16-163` | | | |
 | 164 | `Aug12-21:26:29-440-saphir.cip.ifi.lmu.de-16x16-164` | | | |
 | 165 | `Aug12-21:30:26-914-leucit.cip.ifi.lmu.de-16x16-165` | | | |
-| 166 | `Aug12-21:32:43-349-malachit.cip.ifi.lmu.de-mtcar-166` | | | |
+| 166 | `Aug12-21:32:43-349-malachit.cip.ifi.lmu.de-mtcar-166` | | | From here on `game=mtcar`. |
 | 167 | `Aug12-21:32:58-433-sodalith.cip.ifi.lmu.de-mtcar-167` | | | |
 | 168 | `Aug12-21:32:58-921-peridot.cip.ifi.lmu.de-mtcar-168` | | | |
 | 169 | `Aug12-21:32:58-200-tigerauge.cip.ifi.lmu.de-mtcar-169` | | | |

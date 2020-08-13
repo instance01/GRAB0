@@ -120,7 +120,8 @@ float schedule_alpha(
     A2CLearner a2c_agent,
     LRScheduler *lr_scheduler,
     double total_reward,
-    int n_episode) {
+    int n_episode
+) {
   float lr = 0;
   if (params["optimizer_class"] == "adam") {
     // The decision to only use the first param group might be dubious.
@@ -148,7 +149,8 @@ void write_tensorboard_kpis(
     const std::vector<int>& sample_lens,
     const std::vector<double>& losses,
     float lr,
-    double avg_loss) {
+    double avg_loss
+) {
   writer.add_scalar("Eval/MCTS_Confidence/" + std::to_string(n_run), n_episode, (float) mcts_confidence_median);
 
   writer.add_scalar("Eval/Length/" + std::to_string(n_run), n_episode, (float) eval_length);
@@ -169,22 +171,15 @@ void write_tensorboard_kpis(
   writer.add_scalar("Train/AvgLoss/" + std::to_string(n_run), n_episode, avg_loss);
 }
 
-std::pair<int, double> episode(
-  TensorBoardLogger &writer,
-  int n_run,
-  EnvWrapper env,
-  A2CLearner a2c_agent,
-  int n_episode,
-  ReplayBuffer *replay_buffer,
-  json params,
-  LRScheduler *lr_scheduler,
-  std::chrono::time_point<std::chrono::high_resolution_clock> start_time
+std::vector<int> run_actors(
+    EnvWrapper &env,
+    json &params,
+    A2CLearner &a2c_agent,
+    int n_episode,
+    ReplayBuffer *replay_buffer
 ) {
-  a2c_agent.policy_net->eval();
   int n_actors = params["n_actors"];
-  int train_steps = params["train_steps"];
   int n_procs = params["n_procs"];
-
   std::vector<int> actor_lengths;
 
   // Run self play games in n_procs parallel processes.
@@ -209,9 +204,28 @@ std::pair<int, double> episode(
     actor_lengths.push_back(game->states.size());
     replay_buffer->add(std::move(game));
   }
-  // TODO After this the games vector is unusable. We've moved it all (std::move).
+
+  return actor_lengths;
+}
+
+std::pair<int, double> episode(
+  TensorBoardLogger &writer,
+  int n_run,
+  EnvWrapper env,
+  A2CLearner a2c_agent,
+  int n_episode,
+  ReplayBuffer *replay_buffer,
+  json params,
+  LRScheduler *lr_scheduler,
+  std::chrono::time_point<std::chrono::high_resolution_clock> start_time
+) {
+  a2c_agent.policy_net->eval();
+
+  // Run self play games in n_procs parallel processes.
+  std::vector<int> actor_lengths = run_actors(env, params, a2c_agent, n_episode, replay_buffer);
 
   // Print debug information.
+  int n_actors = params["n_actors"];
   std::cout << "REWARDS ";
   auto rewards = replay_buffer->get_rewards();
   int size_ = rewards.size() - n_actors - 1;
@@ -220,6 +234,7 @@ std::pair<int, double> episode(
   }
   std::cout << std::endl;
 
+  // Calculate MCTS confidence for debugging purposes
   std::vector<double> max_action_probs;
   size_ = replay_buffer->buffer.size() - n_actors - 1;
   for (int i = replay_buffer->buffer.size() - 1; i > size_; --i) {
@@ -236,6 +251,7 @@ std::pair<int, double> episode(
   std::cout << "CONFIDENCE " << mcts_confidence_mean << " " << mcts_confidence_median << std::endl;
 
   // Train network after self play.
+  int train_steps = params["train_steps"];
   std::vector<int> sample_lens;
   std::vector<double> losses;
 
