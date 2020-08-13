@@ -9,11 +9,11 @@ SingleGradientBandit::SingleGradientBandit(json params) {
   n_actions = params["n_actions"];
   n_iter = params["simulations"];
 
-  total_visits = 1;
+  total_visits = 0;
   action_visits = std::vector<int>(n_actions, 0);
-  action_rewards = std::vector<double>(n_actions, 0);
+  action_rewards = std::vector<double>(n_actions, 0.0);
   mean_reward = 0;
-  prob_action = std::vector<double>(n_actions, 0);
+  prob_action = std::vector<double>(n_actions, 0.0);
 
   // H is initialized from a2c.
   H = std::vector<double>(n_actions, 0);
