@@ -44,8 +44,10 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
 
-  GradientBanditSearch *mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params);
-  for (int i = 0; i < game_.mcts_actions.size(); ++i) {
+  Registry registry;
+
+  GradientBanditSearch *mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry);
+  for (int i = 0; i < (int) game_.mcts_actions.size(); ++i) {
     mcts_agent->bandits[i].H = game_.mcts_actions[i];
   }
 

@@ -13,8 +13,13 @@
 #include "util.hpp"
 
 
-std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent) {
+std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent, Registry &registry) {
   env = *env.clone();
+  int n_actions = params["n_actions"];
+
+  std::vector<std::vector<float>> states;
+  std::vector<std::vector<double>> mcts_actions;
+  std::vector<double> rewards;
 
   std::vector<float> state = env.reset();
 
@@ -29,6 +34,11 @@ std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agen
 
     int action = action_probs.argmax().item<int>();
 
+    float* action_probs_arr = action_probs.data_ptr<float>();
+    auto vec = std::vector<float>(action_probs_arr, action_probs_arr + n_actions);
+    mcts_actions.push_back(std::vector<double>(vec.begin(), vec.end()));
+    states.push_back(state);
+
     // TODO Remove. This prints current policy and value in compact way.
     //float* xx = (float*)action_probs.data_ptr();
     //for (int i = 0; i < action_probs.sizes()[1]; ++i)
@@ -40,14 +50,22 @@ std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agen
     std::tie(state, reward, done) = env.step(action);
     total_reward += reward;
     actions += std::to_string(action);
+
+    rewards.push_back(reward);
   }
   //std::cout << std::endl;
+
+  Game registry_game;
+  registry_game.states = states;
+  registry_game.rewards = rewards;
+  registry_game.mcts_actions = mcts_actions;
+  registry.save_if_best(registry_game, total_reward);
 
   std::cout << "EVAL " << actions << " " << total_reward << std::endl;
   return std::make_pair(actions.length(), total_reward);
 }
 
-std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode) {
+std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode, Registry &registry) {
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
 
@@ -57,7 +75,7 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
   if (bandit_type == "mcts") {
     mcts_agent = new MCTS(orig_env, a2c_agent, params);
   } else if (bandit_type == "grad") {
-    mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params);
+    mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry);
   }
 
   // TODO Make sure this is a good idea to init here.
@@ -76,6 +94,7 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
     greedy = epsgreedy_distribution(generator) > epsilon;
   }
 
+  double total_reward = 0;
   bool done = false;
   std::shared_ptr<Game> game = std::make_shared<Game>();
   game->is_greedy = greedy;
@@ -99,15 +118,22 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
     double reward;
     std::tie(next_state, reward, done) = env.step(sampled_action);
 
+    total_reward += reward;
+
     game->states.push_back(state);
     game->rewards.push_back(reward);
     game->mcts_actions.push_back(mcts_action);
+
+    // TODO: Violating encapsulation - not great, not terrible (3.6)
+    mcts_agent->history.rewards.push_back(reward);
 
     state = next_state;
 
     if (done)
       break;
   }
+
+  registry.save_if_best(*game, total_reward);
 
   // std::cout << mcts_actions.size() << " " << std::flush;
   // std::cout << mcts_actions << std::endl;
@@ -176,7 +202,8 @@ std::vector<int> run_actors(
     json &params,
     A2CLearner &a2c_agent,
     int n_episode,
-    ReplayBuffer *replay_buffer
+    ReplayBuffer *replay_buffer,
+    Registry &registry
 ) {
   int n_actors = params["n_actors"];
   int n_procs = params["n_procs"];
@@ -184,8 +211,8 @@ std::vector<int> run_actors(
 
   // Run self play games in n_procs parallel processes.
   auto pool = SimpleThreadPool(n_procs);
-  auto lambda = [env, params, a2c_agent, n_episode]() -> std::shared_ptr<Game> {
-    return run_actor(env, params, a2c_agent, n_episode);
+  auto lambda = [env, params, a2c_agent, n_episode, &registry]() -> std::shared_ptr<Game> {
+    return run_actor(env, params, a2c_agent, n_episode, registry);
   };
   std::vector<Task*> tasks;
   for (int i = 0; i < n_actors; ++i) {
@@ -217,12 +244,15 @@ std::pair<int, double> episode(
   ReplayBuffer *replay_buffer,
   json params,
   LRScheduler *lr_scheduler,
+  Registry &registry,
   std::chrono::time_point<std::chrono::high_resolution_clock> start_time
 ) {
   a2c_agent.policy_net->eval();
 
   // Run self play games in n_procs parallel processes.
-  std::vector<int> actor_lengths = run_actors(env, params, a2c_agent, n_episode, replay_buffer);
+  std::vector<int> actor_lengths = run_actors(
+      env, params, a2c_agent, n_episode, replay_buffer, registry
+  );
 
   // Print debug information.
   int n_actors = params["n_actors"];
@@ -314,7 +344,7 @@ std::pair<int, double> episode(
       std::endl;
   int eval_length;
   double total_reward;
-  std::tie(eval_length, total_reward) = evaluate(env, params, a2c_agent);
+  std::tie(eval_length, total_reward) = evaluate(env, params, a2c_agent, registry);
 
   float lr = schedule_alpha(params, a2c_agent, lr_scheduler, total_reward, n_episode);
 
@@ -346,7 +376,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
     params["prioritized_sampling"]
   );
   auto a2c_agent = A2CLearner(params, env);
-  LRScheduler *lr_scheduler;
+  LRScheduler *lr_scheduler = nullptr;
   if (params["scheduler_class"] == "exp") {
     lr_scheduler = new ExponentialScheduler(
         params["scheduler_factor"],
@@ -368,6 +398,8 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
     );
   }
 
+  Registry registry;
+
   // Need to have less than or equal desired evaluation length, certain times in a row.
   int is_done_stably = 0;
   int desired_eval_len = params["desired_eval_len"];
@@ -388,6 +420,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
         &replay_buffer,
         params,
         lr_scheduler,
+        registry,
         start_time
     );
     //rewards.push_back(total_reward);

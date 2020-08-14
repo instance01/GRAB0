@@ -2,10 +2,12 @@
 #define GRADIENT_BANDIT_HEADER
 #include <vector>
 #include <tuple>
+#include <random>
 #include "env_wrapper.hpp"
 #include "a2c.hpp"
 #include "cfg.hpp"
 #include "bandit.hpp"
+#include "registry.hpp"
 
 
 class SingleGradientBandit {
@@ -40,12 +42,12 @@ class GradientBanditSearch : public Bandit {
     int horizon;
     std::mt19937 generator;
     int reward_power;
+    Registry &registry;
 
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
 
-    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params);
-    GradientBanditSearch() {};
+    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry &registry);
     ~GradientBanditSearch() {};
 
     void reset_policy_cache() {};

@@ -64,7 +64,9 @@ SingleGradientBandit::update(std::vector<double> action_probs, int action, doubl
   }
 }
 
-GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params) {
+GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params, Registry &registry)
+  : registry(registry)
+{
   std::random_device dev;
   generator = std::mt19937(dev());
 
@@ -91,6 +93,8 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
     torch::Tensor action_probs;
     std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({state});
     int action = action_probs.argmax().item<int>();
+
+    // TODO Interesting detail: We add noise AFTER taking the argmax.. Not sure which way is better.
 
     // Add Dirichlet noise.
     std::gamma_distribution<double> distribution(alpha, 1.);
@@ -137,19 +141,21 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
 }
 
 std::vector<double>
-GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs, bool ret_node) {
+GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> state, bool ret_node) {
   // TODO Actions will be continuous at some point. So not int, but double.
   for (int k = 0; k < n_iter; ++k) {
+    double total_reward = 0;
     std::vector<double> rewards;
     std::vector<int> actions;
     std::vector<std::vector<double>> actions_probs_arr;
+    std::vector<std::vector<float>> states;
 
     EnvWrapper env = *orig_env.clone();
 
     // It could be that horizon is set higher than the maximum horizon of the environment.
     // So let's only loop until the size of bandits.
     int j = i;
-    for (; j < bandits.size(); ++j) {
+    for (; j < (int) bandits.size(); ++j) {
       std::vector<double> action_probs;
       int action;
       std::tie(action_probs, action) = bandits[j].policy();
@@ -157,12 +163,16 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
       actions.push_back(action);
       actions_probs_arr.push_back(action_probs);
 
+      std::vector<float> obs;
       double reward;
       bool done;
-      std::tie(std::ignore, reward, done) = env.step(action);
+      std::tie(obs, reward, done) = env.step(action);
+
+      states.push_back(obs);
 
       reward = std::pow(reward, reward_power);
       rewards.push_back(reward);
+      total_reward += reward;
 
       if (done) {
         // Since we break, the last ++j of the loop is not executed.
@@ -171,6 +181,12 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
         break;
       }
     }
+
+    Game game_ = history;
+    game_.states.insert(game_.states.end(), states.begin(), states.end());
+    game_.rewards.insert(game_.rewards.end(), rewards.begin(), rewards.end());
+    game_.mcts_actions.insert(game_.mcts_actions.end(), actions_probs_arr.begin(), actions_probs_arr.end());
+    registry.save_if_best(game_, total_reward);
 
     std::vector<double> cumulative_rewards;
     double curr_sum = 0;
@@ -187,5 +203,11 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> obs,
     }
   }
 
-  return bandits[i].softmax();
+  history.states.push_back(state);
+  // The following is done in alphazero..
+  // history.rewards.push_back(XXXXXXXXXX);
+
+  auto ret = bandits[i].softmax();
+  history.mcts_actions.push_back(ret);
+  return ret;
 }
