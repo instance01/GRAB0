@@ -1098,5 +1098,127 @@
         "eps_greedy_epsilon_decay_factor_train": 0.997,
         "eps_greedy_epsilon_decay_factor_actor": 0.997,
         "episodes": 400
+    },
+    "BT22": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 30000,
+        "reward_power": 1,
+
+        "dirichlet_alpha": 0.8,
+        "dirichlet_frac": 0.8,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997
+    },
+    "BT23": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 30000,
+        "reward_power": 1,
+        "grad_bandit_alpha": 0.1,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.0,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997
+    },
+    "175": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 30000,
+        "reward_power": 1,
+        "grad_bandit_alpha": 0.1,
+        "episodes": 200,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.0,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "176": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 30000,
+        "reward_power": 1,
+        "grad_bandit_alpha": 0.1,
+        "episodes": 200,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "177": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 20000,
+        "reward_power": 1,
+        "grad_bandit_alpha": 0.1,
+        "episodes": 200,
+        "n_actors": 16,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "178": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 10000,
+        "reward_power": 1,
+        "grad_bandit_alpha": 0.1,
+        "episodes": 200,
+        "n_actors": 16,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "179": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 5000,
+        "reward_power": 1,
+        "grad_bandit_alpha": 0.1,
+        "episodes": 200,
+        "n_actors": 16,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "180": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 3000,
+        "reward_power": 1,
+        "grad_bandit_alpha": 0.1,
+        "episodes": 200,
+        "n_actors": 24,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "181": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 2000,
+        "reward_power": 1,
+
+        "hardcoded_power_is_3": true,
+
+        "grad_bandit_alpha": 0.5,
+        "episodes": 300,
+        "n_actors": 24,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
     }
 }
