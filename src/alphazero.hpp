@@ -6,6 +6,6 @@
 #include "mcts.hpp"
 #include "registry.hpp"
 
-std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent, Registry &registry);
-std::shared_ptr<Game> run_actor(EnvWrapper env, json params, MCTS mcts_agent, A2CLearner a2c_agent, Registry &registry);
+std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent, Registry *registry);
+std::shared_ptr<Game> run_actor(EnvWrapper env, json params, MCTS mcts_agent, A2CLearner a2c_agent, Registry *registry);
 #endif

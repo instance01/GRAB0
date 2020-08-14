@@ -44,7 +44,8 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
 
-  Registry registry;
+  ReplayBuffer *replay_buffer = new ReplayBuffer(3000, false);
+  Registry *registry = new Registry(replay_buffer);
 
   GradientBanditSearch *mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry);
   for (int i = 0; i < (int) game_.mcts_actions.size(); ++i) {
@@ -81,4 +82,7 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
   }
 
   std::cout << "RESULT " << mcts_actions << std::endl;
+
+  delete registry;
+  delete replay_buffer;
 }

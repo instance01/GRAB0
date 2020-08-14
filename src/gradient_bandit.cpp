@@ -64,7 +64,7 @@ SingleGradientBandit::update(std::vector<double> action_probs, int action, doubl
   }
 }
 
-GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params, Registry &registry)
+GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params, Registry *registry)
   : registry(registry)
 {
   std::random_device dev;
@@ -144,7 +144,6 @@ std::vector<double>
 GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> state, bool ret_node) {
   // TODO Actions will be continuous at some point. So not int, but double.
   for (int k = 0; k < n_iter; ++k) {
-    double total_reward = 0;
     std::vector<double> rewards;
     std::vector<int> actions;
     std::vector<std::vector<double>> actions_probs_arr;
@@ -172,7 +171,6 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
 
       reward = std::pow(reward, reward_power);
       rewards.push_back(reward);
-      total_reward += reward;
 
       if (done) {
         // Since we break, the last ++j of the loop is not executed.
@@ -182,11 +180,13 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
       }
     }
 
+
     Game game_ = history;
     game_.states.insert(game_.states.end(), states.begin(), states.end());
     game_.rewards.insert(game_.rewards.end(), rewards.begin(), rewards.end());
     game_.mcts_actions.insert(game_.mcts_actions.end(), actions_probs_arr.begin(), actions_probs_arr.end());
-    registry.save_if_best(game_, total_reward);
+    double total_reward = std::accumulate(game_.rewards.begin(), game_.rewards.end(), 0.0);
+    registry->save_if_best(game_, total_reward);
 
     std::vector<double> cumulative_rewards;
     double curr_sum = 0;

@@ -13,7 +13,7 @@
 #include "util.hpp"
 
 
-std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent, Registry &registry) {
+std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agent, Registry *registry) {
   env = *env.clone();
   int n_actions = params["n_actions"];
 
@@ -59,13 +59,13 @@ std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agen
   registry_game.states = states;
   registry_game.rewards = rewards;
   registry_game.mcts_actions = mcts_actions;
-  registry.save_if_best(registry_game, total_reward);
+  registry->save_if_best(registry_game, total_reward);
 
   std::cout << "EVAL " << actions << " " << total_reward << std::endl;
   return std::make_pair(actions.length(), total_reward);
 }
 
-std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode, Registry &registry) {
+std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode, Registry *registry) {
   EnvWrapper env = *orig_env.clone();
   auto state = env.reset();
 
@@ -133,7 +133,7 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
       break;
   }
 
-  registry.save_if_best(*game, total_reward);
+  registry->save_if_best(*game, total_reward);
 
   // std::cout << mcts_actions.size() << " " << std::flush;
   // std::cout << mcts_actions << std::endl;
@@ -203,7 +203,7 @@ std::vector<int> run_actors(
     A2CLearner &a2c_agent,
     int n_episode,
     ReplayBuffer *replay_buffer,
-    Registry &registry
+    Registry *registry
 ) {
   int n_actors = params["n_actors"];
   int n_procs = params["n_procs"];
@@ -211,7 +211,7 @@ std::vector<int> run_actors(
 
   // Run self play games in n_procs parallel processes.
   auto pool = SimpleThreadPool(n_procs);
-  auto lambda = [env, params, a2c_agent, n_episode, &registry]() -> std::shared_ptr<Game> {
+  auto lambda = [env, params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
     return run_actor(env, params, a2c_agent, n_episode, registry);
   };
   std::vector<Task*> tasks;
@@ -244,7 +244,7 @@ std::pair<int, double> episode(
   ReplayBuffer *replay_buffer,
   json params,
   LRScheduler *lr_scheduler,
-  Registry &registry,
+  Registry *registry,
   std::chrono::time_point<std::chrono::high_resolution_clock> start_time
 ) {
   a2c_agent.policy_net->eval();
@@ -371,7 +371,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
   writer.add_text("Info/params/" + std::to_string(n_run), 0, oss.str().c_str());
 
   auto start_time = std::chrono::high_resolution_clock::now();
-  ReplayBuffer replay_buffer(
+  ReplayBuffer *replay_buffer = new ReplayBuffer(
     params["memory_capacity"],
     params["prioritized_sampling"]
   );
@@ -398,7 +398,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
     );
   }
 
-  Registry registry;
+  Registry *registry = new Registry(replay_buffer);
 
   // Need to have less than or equal desired evaluation length, certain times in a row.
   int is_done_stably = 0;
@@ -417,7 +417,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
         env,
         a2c_agent,
         i,
-        &replay_buffer,
+        replay_buffer,
         params,
         lr_scheduler,
         registry,
@@ -442,6 +442,8 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
       "Summary/Rewards_All_Single", n_run, total_reward
   );
   delete lr_scheduler;
+  delete registry;
+  delete replay_buffer;
   return std::make_tuple(i, eval_len, total_reward);
 }
 

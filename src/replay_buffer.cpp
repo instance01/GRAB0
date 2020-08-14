@@ -77,7 +77,7 @@ ReplayBuffer::get_best() {
   std::vector<int> indices;
   std::vector<double> rewards_filtered;
 
-  for (int i = 0; i < buffer.size(); ++i) {
+  for (int i = 0; i < (int) buffer.size(); ++i) {
     if (buffer[i]->is_greedy) {
       rewards_filtered.push_back(rewards[i]);
       indices.push_back(i);

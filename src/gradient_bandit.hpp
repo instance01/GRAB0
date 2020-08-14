@@ -42,12 +42,12 @@ class GradientBanditSearch : public Bandit {
     int horizon;
     std::mt19937 generator;
     int reward_power;
-    Registry &registry;
+    Registry *registry;
 
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
 
-    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry &registry);
+    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry *registry);
     ~GradientBanditSearch() {};
 
     void reset_policy_cache() {};
