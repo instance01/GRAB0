@@ -14,18 +14,27 @@ Bad = B; Ok = K; Good = G
 | BT19 | | | No | A few good evals. |
 | BT20 | | | Yes | Excellent solutions and no bad evals. 4 runs, all perfect. |
 | BT21 | | | Yes | Excellent solutions, but quite often bad evals. In all 4 runs. |
-| 158 | `Aug12-12:36:52-687-goshenit.cip.ifi.lmu.de-16x16-158` | | | From here on `game=16x16`. |
-| 159 | `Aug12-12:26:14-453-heliodor.cip.ifi.lmu.de-16x16-159` | | | |
-| 160 | `Aug12-12:23:39-808-danburit.cip.ifi.lmu.de-16x16-160` | | | |
-| 161 | `Aug12-16:13:19-139-petalit.cip.ifi.lmu.de-16x16-161` | | | |
-| 162 | `Aug12-21:26:29-443-lapislazuli.cip.ifi.lmu.de-16x16-162` | | | |
-| 163 | `Aug12-21:26:29-302-zirkon.cip.ifi.lmu.de-16x16-163` | | | |
-| 164 | `Aug12-21:26:29-440-saphir.cip.ifi.lmu.de-16x16-164` | | | |
-| 165 | `Aug12-21:30:26-914-leucit.cip.ifi.lmu.de-16x16-165` | | | |
-| 166 | `Aug12-21:32:43-349-malachit.cip.ifi.lmu.de-mtcar-166` | | | From here on `game=mtcar`. |
-| 167 | `Aug12-21:32:58-433-sodalith.cip.ifi.lmu.de-mtcar-167` | | | |
-| 168 | `Aug12-21:32:58-921-peridot.cip.ifi.lmu.de-mtcar-168` | | | |
-| 169 | `Aug12-21:32:58-200-tigerauge.cip.ifi.lmu.de-mtcar-169` | | | |
-| 170 | `Aug12-21:32:58-488-thulit.cip.ifi.lmu.de-mtcar-170` | | | |
-| 171 | `Aug12-21:32:58-522-tansanit.cip.ifi.lmu.de-mtcar-171` | | | |
-| 172 | `Aug12-21:32:58-98-smaragd.cip.ifi.lmu.de-mtcar-172` | | | |
+| 158 | `Aug12-12:36:52-687-goshenit.cip.ifi.lmu.de-16x16-158` | | 8/10 | From here on `game=16x16`. Want: 50 episodes of good evaluations. E.g. here: 8 times that criterion was fulfilled. |
+| 159 | `Aug12-12:26:14-453-heliodor.cip.ifi.lmu.de-16x16-159` | | 7/8 | |
+| 160 | `Aug12-12:23:39-808-danburit.cip.ifi.lmu.de-16x16-160` | | 9/10 | |
+| 161 | `Aug12-16:13:19-139-petalit.cip.ifi.lmu.de-16x16-161` | | 7/10 | 8/10 on a second run. |
+| 162 | `Aug12-21:26:29-443-lapislazuli.cip.ifi.lmu.de-16x16-162` | | 10/10 | Close one. |
+| 163 | `Aug12-21:26:29-302-zirkon.cip.ifi.lmu.de-16x16-163` | | 7/10 | |
+| 164 | `Aug12-21:26:29-440-saphir.cip.ifi.lmu.de-16x16-164` | | 6/10 | |
+| 165 | `Aug12-21:30:26-914-leucit.cip.ifi.lmu.de-16x16-165` | | 10/10 | Comment for all the above: They all diverge after a while (but I didn't use reduce on good eval scheduler this time, which most likely would've fixed the issue). Scheduler used: Exponential. |
+| 166 | `` | | | From here on `game=mtcar`. Had to restart all (but left out 168, 175) because didn't go anywhere. Restarted with registry system. |
+| 167 | `` | | | |
+| 168 | `Aug12-21:32:58-921-peridot.cip.ifi.lmu.de-mtcar-168` | | 0/2 | See comment at:166. |
+| 169 | `` | | | |
+| 170 | `` | | | |
+| 171 | `` | | | |
+| 172 | `` | | | |
+| 173 | `` | | | |
+| 174 | `` | | | |
+| 175 | `Aug13-18:43:28-872-thulit.cip.ifi.lmu.de-mtcar-175` | | 0/2 | See comment at 166. |
+| 176 | `` | | | |
+| 177 | `` | | | |
+| 178 | `` | | | |
+| 179 | `` | | | |
+| 180 | `` | | | |
+| 181 | `` | | | |

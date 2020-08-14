@@ -5,7 +5,7 @@ void
 Registry::save_if_best(Game game, double reward) {
   // It's thread safe !!
   lock.lock();
-  // Strictly 'greater than' was a concious choice.
+  // Strictly 'greater than' was a conscious choice.
   if (reward > best_reward) {
     game.is_greedy = true;
 

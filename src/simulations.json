@@ -1210,8 +1210,6 @@
         "simulations": 2000,
         "reward_power": 1,
 
-        "hardcoded_power_is_3": true,
-
         "grad_bandit_alpha": 0.5,
         "episodes": 300,
         "n_actors": 24,
