@@ -1218,5 +1218,66 @@
         "dirichlet_frac": 0.5,
         "eps_greedy_epsilon_decay_factor_train": 0.995,
         "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "182": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "scheduler_factor": 0.99,
+
+        "memory_capacity": 10000,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
+    },
+    "183": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 2000,
+        "reward_power": 1,
+
+        "grad_bandit_alpha": 0.5,
+        "episodes": 300,
+        "n_actors": 24,
+
+        "memory_capacity": 10000,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "184": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "simulations": 1000,
+        "reward_power": 1,
+
+        "grad_bandit_alpha": 0.5,
+        "episodes": 300,
+        "n_actors": 24,
+
+        "memory_capacity": 10000,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.5,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995
+    },
+    "185": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "memory_capacity": 10000,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400
     }
 }

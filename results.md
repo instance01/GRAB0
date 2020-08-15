@@ -38,3 +38,7 @@ Bad = B; Ok = K; Good = G
 | 179 | `` | | | |
 | 180 | `` | | | |
 | 181 | `` | | | |
+| 182 | `` | | | This and next 3: memory capacity increased. |
+| 183 | `` | | | |
+| 184 | `` | | | `simulations=1000` |
+| 185 | `` | | | |
