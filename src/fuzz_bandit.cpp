@@ -13,7 +13,8 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
   // A few examples.
   //std::string action_str = "222222221220221220212222222022122";
   //std::string action_str = "12201022012222011222222220122021021202201222";
-  std::string action_str = "102102200012222002020222212220211222222212222222222210222220222222";
+  //std::string action_str = "102102200012222002020222212220211222222212222222222210222220222222";
+  std::string action_str = "222222222222222222222222222222222212221100000000000000000000000000000000222222222222222222222222222222222222222222222";
 
   std::cout << "INPUT " << action_str << std::endl;
 
@@ -31,8 +32,8 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
     // mcts_action[action] = 0.98;
 
     // Tough mode.
-    std::vector<double> mcts_action{0.31, 0.31, 0.31};
-    mcts_action[action] = 0.38;
+    std::vector<double> mcts_action{0.32, 0.32, 0.32};
+    mcts_action[action] = 0.36;
 
     game_.states.push_back(state);
     game_.mcts_actions.push_back(mcts_action);
@@ -75,6 +76,8 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
     game->states.push_back(state);
     game->rewards.push_back(reward);
     game->mcts_actions.push_back(mcts_action);
+
+    mcts_agent->history.rewards.push_back(reward);
     
     state = next_state;
     if (done)
