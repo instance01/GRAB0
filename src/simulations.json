@@ -931,7 +931,7 @@
     },
     "BT20": {
         "base": "81",
-        "memory_capacity": 2000,
+        "memory_capacity": 20000,
         "n_runs": 1,
         "bandit_type": "grad",
         "tough_ce": true,
@@ -1279,5 +1279,19 @@
         "eps_greedy_epsilon_decay_factor_train": 0.997,
         "eps_greedy_epsilon_decay_factor_actor": 0.997,
         "episodes": 400
+    },
+    "186": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "memory_capacity": 10000,
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.996,
+        "eps_greedy_epsilon_decay_factor_actor": 0.996,
+        "episodes": 400,
+
+        "schedule_alpha": false,
+        "tough_ce": false,
+        "alpha": 0.00001
     }
 }

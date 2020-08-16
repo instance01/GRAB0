@@ -201,7 +201,7 @@ json get_default(std::string base) {
       {"sgd_momentum", .9},
 
       // AlphaZero
-      {"memory_capacity", 2000},
+      {"memory_capacity", 10000},
       {"prioritized_sampling", false},
       {"episodes", 200},
       {"n_procs", 8},
