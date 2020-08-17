@@ -109,6 +109,10 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
     auto bandit = SingleGradientBandit(params);
     auto vec = std::vector<float>(action_probs_arr, action_probs_arr + n_actions);
     bandit.H = std::vector<double>(vec.begin(), vec.end());
+    // Initialize with log.
+    for (int k = 0; k < (int) vec.size(); ++k) {
+      bandit.H[k] = std::log(vec[k]);
+    }
     bandits.push_back(bandit);
 
     // Continue evaluating.
@@ -180,7 +184,6 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
       }
     }
 
-
     Game game_ = history;
     game_.states.insert(game_.states.end(), states.begin(), states.end());
     game_.rewards.insert(game_.rewards.end(), rewards.begin(), rewards.end());
@@ -188,6 +191,9 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
     double total_reward = std::accumulate(game_.rewards.begin(), game_.rewards.end(), 0.0);
     registry->save_if_best(game_, total_reward);
 
+    // TODO Clean code.
+    // Update all bandits from this index to the end.
+    // For this, we need cumulative rewards.
     std::vector<double> cumulative_rewards;
     double curr_sum = 0;
     for (std::vector<double>::reverse_iterator iter = rewards.rbegin(); iter != rewards.rend(); ++iter) {
@@ -199,7 +205,26 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
     // This had an off by one mistake. Refer to j += 1 a few lines above.
     int size = std::min((int) bandits.size() - 1, j - i);
     for (int m = 0; m < size; ++m) {
-      bandits[m + i].update(actions_probs_arr[m], actions[m], cumulative_rewards[m]);
+      bandits[m + i].update(actions_probs_arr[m], actions[m], cumulative_rewards[m], m + i);
+    }
+
+    // Update all bandits from 0 to i.
+    total_reward = std::accumulate(rewards.begin(), rewards.end(), 0.0);
+
+    cumulative_rewards = std::vector<double>();
+    curr_sum = 0;
+    for (std::vector<double>::reverse_iterator iter = game_.rewards.rbegin(); iter != game_.rewards.rend(); ++iter) {
+      curr_sum += *iter;
+      cumulative_rewards.push_back(curr_sum);
+    }
+    std::reverse(cumulative_rewards.begin(), cumulative_rewards.end());
+
+    for (int m = 0; m < i; ++m) {
+      auto mcts_action = game_.mcts_actions[m];
+      auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
+      int argmax_action = std::distance(mcts_action.begin(), max_el);
+
+      bandits[m].update(mcts_action, argmax_action, cumulative_rewards[m], -1);
     }
   }
 
