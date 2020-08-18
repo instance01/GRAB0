@@ -78,6 +78,8 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
   double frac = params["dirichlet_frac"];
   bool do_init_random = params["grad_bandit_init_random"];
   reward_power = params["grad_bandit_reward_power"];
+  tau_schedule_k = params["grad_bandit_tau_schedule_k"].get<std::vector<int>>();
+  tau_schedule_tau = params["grad_bandit_tau_schedule_tau"].get<std::vector<int>>();
 
   EnvWrapper env_ = *orig_env.clone();
 
@@ -155,14 +157,12 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
 
     EnvWrapper env = *orig_env.clone();
 
-    // TODO Make configurable. (will add soon)
-    float tau = 1.0;
+    float tau = 1.;
     if (greedy_bandit) {
-      tau = 1. / 110;
-      if (k > 500)
-        tau = 1. / 90;
-      if (k > 1000)
-        tau = 1. / 80;
+      for (int i = 0; i < (int) tau_schedule_k.size(); ++i) {
+        if (k >= tau_schedule_k[i])
+          tau = 1. / tau_schedule_tau[i];
+      }
     }
 
     // It could be that horizon is set higher than the maximum horizon of the environment.

@@ -45,6 +45,8 @@ class GradientBanditSearch : public Bandit {
     Registry *registry;
 
     bool greedy_bandit;
+    std::vector<int> tau_schedule_k;
+    std::vector<int> tau_schedule_tau;
 
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
