@@ -14,6 +14,7 @@ CartPoleEnv::CartPoleEnv() {
   // TODO: stddev=2 for velocities is pulled out of my ass..
   expected_mean = {0., 0., 0., 0.};
   expected_stddev = {5., 2., 1., 2.};
+  max_steps = 200;
 }
 
 CartPoleEnv::CartPoleEnv(CartPoleEnv &other) {

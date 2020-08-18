@@ -22,7 +22,6 @@ class CartPoleEnv : public Env {
     float tau = 0.02;
     float theta_threshold_radians = 12 * 2 * M_PI / 360;
     float x_threshold = 2.4;
-    int max_steps = 200;
 
     // State
     int steps = 0;
