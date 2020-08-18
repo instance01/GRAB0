@@ -195,6 +195,9 @@ std::pair<int, double> episode(
 
   // Print debug information.
   int n_actors = params["n_actors"];
+  std::string bandit_type = params["bandit_type"];
+  if (bandit_type == "grad")
+    n_actors *= 2;
   std::cout << "REWARDS ";
   auto rewards = replay_buffer->get_rewards();
   int size_ = rewards.size() - n_actors - 1;
