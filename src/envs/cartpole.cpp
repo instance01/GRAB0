@@ -12,7 +12,7 @@ CartPoleEnv::CartPoleEnv() {
 
   // State is already normalized well enough..
   // TODO: stddev=2 for velocities is pulled out of my ass..
-  expected_mean = {0., 0.};
+  expected_mean = {0., 0., 0., 0.};
   expected_stddev = {5., 2., 1., 2.};
 }
 
