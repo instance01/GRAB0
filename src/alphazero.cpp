@@ -145,18 +145,16 @@ std::vector<int> run_actors(
     tasks.push_back(task);
   }
 
-  // For each gradient bandit we also add a greedy gradient bandit.
+  // If using gradient bandits: Add one super greedy bandit.
   std::string bandit_type = params["bandit_type"];
   if (bandit_type == "grad") {
     auto lambda2 = [env, params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
       // 'true' denotes greedy.
       return run_actor(env, params, a2c_agent, n_episode, registry, true);
     };
-    for (int i = 0; i < n_actors; ++i) {
-      Task *task = new Task(lambda2);
-      pool.add_task(task);
-      tasks.push_back(task);
-    }
+    Task *task = new Task(lambda2);
+    pool.add_task(task);
+    tasks.push_back(task);
   }
 
   std::vector<std::shared_ptr<Game>> games = pool.join();
@@ -197,7 +195,7 @@ std::pair<int, double> episode(
   int n_actors = params["n_actors"];
   std::string bandit_type = params["bandit_type"];
   if (bandit_type == "grad")
-    n_actors *= 2;
+    n_actors += 1;
   std::cout << "REWARDS ";
   auto rewards = replay_buffer->get_rewards();
   int size_ = rewards.size() - n_actors - 1;
@@ -335,6 +333,9 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
     std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
     greedy = epsgreedy_distribution(generator) > epsilon;
   }
+
+  if (greedy_bandit)
+    greedy = true;
 
   double total_reward = 0;
   bool done = false;
