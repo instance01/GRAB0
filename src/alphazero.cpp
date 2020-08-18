@@ -65,82 +65,6 @@ std::pair<int, double> evaluate(EnvWrapper env, json params, A2CLearner a2c_agen
   return std::make_pair(actions.length(), total_reward);
 }
 
-std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode, Registry *registry) {
-  EnvWrapper env = *orig_env.clone();
-  auto state = env.reset();
-
-  // TODO Creating a new bandit here every time succs..
-  std::string bandit_type = params["bandit_type"];
-  Bandit *mcts_agent;
-  if (bandit_type == "mcts") {
-    mcts_agent = new MCTS(orig_env, a2c_agent, params);
-  } else if (bandit_type == "grad") {
-    mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry);
-  }
-
-  // TODO Make sure this is a good idea to init here.
-  std::random_device rd;
-  std::mt19937 generator(rd());
-
-  int horizon = params["horizon"];
-
-  std::string mcts_actions = "";
-
-  float eps_greedy_epsilon_decay_factor = params["eps_greedy_epsilon_decay_factor_actor"];
-  float epsilon = std::pow(eps_greedy_epsilon_decay_factor, n_episode);
-  bool greedy = false;
-  if (params["use_eps_greedy_learning"]) {
-    std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
-    greedy = epsgreedy_distribution(generator) > epsilon;
-  }
-
-  double total_reward = 0;
-  bool done = false;
-  std::shared_ptr<Game> game = std::make_shared<Game>();
-  game->is_greedy = greedy;
-  for (int i = 0; i < horizon; ++i) {
-    auto mcts_action = mcts_agent->policy(i, env, state);
-
-    int sampled_action;
-    if (greedy) {
-      auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
-      sampled_action = std::distance(mcts_action.begin(), max_el);
-    } else {
-      std::discrete_distribution<int> distribution(mcts_action.begin(), mcts_action.end());
-      sampled_action = distribution(generator);
-    }
-    mcts_actions += std::to_string(sampled_action);
-
-    torch::Tensor action_probs;
-    std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({state});
-
-    std::vector<float> next_state;
-    double reward;
-    std::tie(next_state, reward, done) = env.step(sampled_action);
-
-    total_reward += reward;
-
-    game->states.push_back(state);
-    game->rewards.push_back(reward);
-    game->mcts_actions.push_back(mcts_action);
-
-    // TODO: Violating encapsulation - not great, not terrible (3.6)
-    mcts_agent->history.rewards.push_back(reward);
-
-    state = next_state;
-
-    if (done)
-      break;
-  }
-
-  registry->save_if_best(*game, total_reward);
-
-  // std::cout << mcts_actions.size() << " " << std::flush;
-  // std::cout << mcts_actions << std::endl;
-  delete mcts_agent;
-  return game;
-}
-
 float schedule_alpha(
     json params,
     A2CLearner a2c_agent,
@@ -220,6 +144,21 @@ std::vector<int> run_actors(
     pool.add_task(task);
     tasks.push_back(task);
   }
+
+  // For each gradient bandit we also add a greedy gradient bandit.
+  std::string bandit_type = params["bandit_type"];
+  if (bandit_type == "grad") {
+    auto lambda2 = [env, params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
+      // 'true' denotes greedy.
+      return run_actor(env, params, a2c_agent, n_episode, registry, true);
+    };
+    for (int i = 0; i < n_actors; ++i) {
+      Task *task = new Task(lambda2);
+      pool.add_task(task);
+      tasks.push_back(task);
+    }
+  }
+
   std::vector<std::shared_ptr<Game>> games = pool.join();
 
   for (Task* task : tasks) {
@@ -363,6 +302,82 @@ std::pair<int, double> episode(
   std::cout << std::endl;
 
   return {eval_length, total_reward};
+}
+
+std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode, Registry *registry, bool greedy_bandit) {
+  EnvWrapper env = *orig_env.clone();
+  auto state = env.reset();
+
+  // TODO Creating a new bandit here every time succs..
+  std::string bandit_type = params["bandit_type"];
+  Bandit *mcts_agent;
+  if (bandit_type == "mcts") {
+    mcts_agent = new MCTS(orig_env, a2c_agent, params);
+  } else if (bandit_type == "grad") {
+    mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry, greedy_bandit);
+  }
+
+  // TODO Make sure this is a good idea to init here.
+  std::random_device rd;
+  std::mt19937 generator(rd());
+
+  int horizon = params["horizon"];
+
+  std::string mcts_actions = "";
+
+  float eps_greedy_epsilon_decay_factor = params["eps_greedy_epsilon_decay_factor_actor"];
+  float epsilon = std::pow(eps_greedy_epsilon_decay_factor, n_episode);
+  bool greedy = false;
+  if (params["use_eps_greedy_learning"]) {
+    std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
+    greedy = epsgreedy_distribution(generator) > epsilon;
+  }
+
+  double total_reward = 0;
+  bool done = false;
+  std::shared_ptr<Game> game = std::make_shared<Game>();
+  game->is_greedy = greedy;
+  for (int i = 0; i < horizon; ++i) {
+    auto mcts_action = mcts_agent->policy(i, env, state);
+
+    int sampled_action;
+    if (greedy) {
+      auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
+      sampled_action = std::distance(mcts_action.begin(), max_el);
+    } else {
+      std::discrete_distribution<int> distribution(mcts_action.begin(), mcts_action.end());
+      sampled_action = distribution(generator);
+    }
+    mcts_actions += std::to_string(sampled_action);
+
+    torch::Tensor action_probs;
+    std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({state});
+
+    std::vector<float> next_state;
+    double reward;
+    std::tie(next_state, reward, done) = env.step(sampled_action);
+
+    total_reward += reward;
+
+    game->states.push_back(state);
+    game->rewards.push_back(reward);
+    game->mcts_actions.push_back(mcts_action);
+
+    // TODO: Violating encapsulation - not great, not terrible (3.6)
+    mcts_agent->history.rewards.push_back(reward);
+
+    state = next_state;
+
+    if (done)
+      break;
+  }
+
+  registry->save_if_best(*game, total_reward);
+
+  // std::cout << mcts_actions.size() << " " << std::flush;
+  // std::cout << mcts_actions << std::endl;
+  delete mcts_agent;
+  return game;
 }
 
 std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorBoardLogger &writer) {

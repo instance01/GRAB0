@@ -21,16 +21,16 @@ SingleGradientBandit::SingleGradientBandit(json params) {
 }
 
 std::vector<double>
-SingleGradientBandit::softmax() {
+SingleGradientBandit::softmax(float tau) {
   double maxH = *std::max_element(H.begin(), H.end());
 
   double sum = 0;
   for (int i = 0; i < n_actions; ++i) {
-    sum += std::exp(H[i] - maxH);
+    sum += std::exp((H[i] - maxH) / tau);
   }
 
   for (int i = 0; i < n_actions; ++i) {
-    prob_action[i] = std::exp(H[i] - maxH) / sum;
+    prob_action[i] = std::exp((H[i] - maxH) / tau) / sum;
   }
 
   return prob_action;
@@ -43,8 +43,8 @@ SingleGradientBandit::sample(std::vector<double> action_probs) {
 }
 
 std::pair<std::vector<double>, int>
-SingleGradientBandit::policy() {
-  auto action_probs = softmax();
+SingleGradientBandit::policy(float tau) {
+  auto action_probs = softmax(tau);
   return {action_probs, sample(action_probs)};
 }
 
@@ -64,8 +64,8 @@ SingleGradientBandit::update(std::vector<double> action_probs, int action, doubl
   }
 }
 
-GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params, Registry *registry)
-  : registry(registry)
+GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params, Registry *registry, bool greedy_bandit)
+  : registry(registry), greedy_bandit(greedy_bandit)
 {
   std::random_device dev;
   generator = std::mt19937(dev());
@@ -155,13 +155,23 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
 
     EnvWrapper env = *orig_env.clone();
 
+    // TODO Make configurable. (will add soon)
+    float tau = 1.0;
+    if (greedy_bandit) {
+      tau = 1. / 110;
+      if (k > 500)
+        tau = 1. / 90;
+      if (k > 1000)
+        tau = 1. / 80;
+    }
+
     // It could be that horizon is set higher than the maximum horizon of the environment.
     // So let's only loop until the size of bandits.
     int j = i;
     for (; j < (int) bandits.size(); ++j) {
       std::vector<double> action_probs;
       int action;
-      std::tie(action_probs, action) = bandits[j].policy();
+      std::tie(action_probs, action) = bandits[j].policy(tau);
 
       actions.push_back(action);
       actions_probs_arr.push_back(action_probs);
@@ -205,7 +215,7 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
     // This had an off by one mistake. Refer to j += 1 a few lines above.
     int size = std::min((int) bandits.size() - 1, j - i);
     for (int m = 0; m < size; ++m) {
-      bandits[m + i].update(actions_probs_arr[m], actions[m], cumulative_rewards[m], m + i);
+      bandits[m + i].update(actions_probs_arr[m], actions[m], cumulative_rewards[m]);
     }
 
     // Update all bandits from 0 to i.
@@ -224,7 +234,7 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
       auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
       int argmax_action = std::distance(mcts_action.begin(), max_el);
 
-      bandits[m].update(mcts_action, argmax_action, cumulative_rewards[m], -1);
+      bandits[m].update(mcts_action, argmax_action, cumulative_rewards[m]);
     }
   }
 
@@ -232,7 +242,7 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
   // The following is done in alphazero..
   // history.rewards.push_back(XXXXXXXXXX);
 
-  auto ret = bandits[i].softmax();
+  auto ret = bandits[i].softmax(1);
   history.mcts_actions.push_back(ret);
   return ret;
 }

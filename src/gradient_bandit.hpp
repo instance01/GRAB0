@@ -28,9 +28,9 @@ class SingleGradientBandit {
 
     SingleGradientBandit(json params);
 
-    std::vector<double> softmax();
+    std::vector<double> softmax(float tau);
     int sample(std::vector<double> prob_actions);
-    std::pair<std::vector<double>, int> policy();
+    std::pair<std::vector<double>, int> policy(float tau);
     void update(std::vector<double> prob_actions, int action, double reward);
 };
 
@@ -44,10 +44,12 @@ class GradientBanditSearch : public Bandit {
     int reward_power;
     Registry *registry;
 
+    bool greedy_bandit;
+
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
 
-    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry *registry);
+    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry *registry, bool greedy_bandit=false);
     ~GradientBanditSearch() {};
 
     void reset_policy_cache() {};
