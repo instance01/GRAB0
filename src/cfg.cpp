@@ -58,6 +58,8 @@ json get_default(std::string base) {
       {"eps_greedy_epsilon_decay_factor_actor", 0.995},
       {"grad_bandit_init_random", true},
       {"grad_bandit_reward_power", 1},
+      {"grad_bandit_tau_schedule_tau", {20, 90, 80}},
+      {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
 
       // Other
       {"reward_exponent", 1},
@@ -114,6 +116,8 @@ json get_default(std::string base) {
       {"eps_greedy_epsilon_decay_factor_actor", 0.995},
       {"grad_bandit_init_random", true},
       {"grad_bandit_reward_power", 1},
+      {"grad_bandit_tau_schedule_tau", {20, 90, 80}},
+      {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
 
       // Other
       {"reward_exponent", 1},
@@ -165,6 +169,8 @@ json get_default(std::string base) {
       {"eps_greedy_epsilon_decay_factor_actor", 0.995},
       {"grad_bandit_init_random", true},
       {"grad_bandit_reward_power", 1},
+      {"grad_bandit_tau_schedule_tau", {20, 90, 80}},
+      {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
 
       // Other
       {"reward_exponent", 1},
@@ -216,6 +222,8 @@ json get_default(std::string base) {
       {"eps_greedy_epsilon_decay_factor_actor", 0.99},
       {"grad_bandit_init_random", true},
       {"grad_bandit_reward_power", 1},
+      {"grad_bandit_tau_schedule_tau", {20, 90, 80}},
+      {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
 
       // Other
       {"reward_exponent", 1},
