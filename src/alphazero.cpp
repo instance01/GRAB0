@@ -133,6 +133,9 @@ std::vector<int> run_actors(
   int n_procs = params["n_procs"];
   std::vector<int> actor_lengths;
 
+  bool do_warmup = params["do_warmup"];
+  int n_warmup = params["n_warmup"];
+
   // Run self play games in n_procs parallel processes.
   auto pool = SimpleThreadPool(n_procs);
   auto lambda = [env, params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
@@ -143,6 +146,14 @@ std::vector<int> run_actors(
     Task *task = new Task(lambda);
     pool.add_task(task);
     tasks.push_back(task);
+  }
+  if (do_warmup) {
+    params["do_warmup"] = false;
+    for (int i = 0; i < n_warmup; ++i) {
+      Task *task = new Task(lambda);
+      pool.add_task(task);
+      tasks.push_back(task);
+    }
   }
 
   // If using gradient bandits: Add one super greedy bandit.
@@ -179,7 +190,7 @@ std::pair<int, double> episode(
   A2CLearner a2c_agent,
   int n_episode,
   ReplayBuffer *replay_buffer,
-  json params,
+  json &params,
   LRScheduler *lr_scheduler,
   Registry *registry,
   std::chrono::time_point<std::chrono::high_resolution_clock> start_time
