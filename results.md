@@ -22,7 +22,7 @@ Bad = B; Ok = K; Good = G
 | 163 | `Aug12-21:26:29-302-zirkon.cip.ifi.lmu.de-16x16-163` | | 7/10 | |
 | 164 | `Aug12-21:26:29-440-saphir.cip.ifi.lmu.de-16x16-164` | | 6/10 | |
 | 165 | `Aug12-21:30:26-914-leucit.cip.ifi.lmu.de-16x16-165` | | 10/10 | Comment for all the above: They all diverge after a while (but I didn't use reduce on good eval scheduler this time, which most likely would've fixed the issue). Scheduler used: Exponential. |
-| 166 | `` | | | From here on `game=mtcar`. Had to restart all (but left out 168, 175) because didn't go anywhere. Restarted with registry system. |
+| 166 | `` | | | From here on `game=mtcar`. Had to restart all (but left out 168, 175) because didn't go anywhere. Restarted with registry system. Below up to 188 do not include tau and init with log. |
 | 167 | `` | | | |
 | 168 | `Aug12-21:32:58-921-peridot.cip.ifi.lmu.de-mtcar-168` | | 0/2 | See comment at:166. |
 | 169 | `` | | | |
@@ -32,9 +32,9 @@ Bad = B; Ok = K; Good = G
 | 173 | `` | | | |
 | 174 | `` | | | |
 | 175 | `Aug13-18:43:28-872-thulit.cip.ifi.lmu.de-mtcar-175` | | 0/2 | See comment at 166. |
-| 176 | `` | | | |
-| 177 | `` | | | |
-| 178 | `` | | | |
+| 176 | `Aug16-06:14:35-136-rhodonit.cip.ifi.lmu.de-mtcar-176` | | 0/1 | Infeasable, takes too long. |
+| 177 | `Aug16-06:14:35-733-smaragd.cip.ifi.lmu.de-mtcar-177` | | 0/1 | See 176 |
+| 178 | `Aug16-06:14:35-921-saphir.cip.ifi.lmu.de-mtcar-178` | | | See 176 |
 | 179 | `` | | | |
 | 180 | `` | | | |
 | 181 | `` | | | |

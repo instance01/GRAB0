@@ -1293,5 +1293,49 @@
         "schedule_alpha": false,
         "tough_ce": false,
         "alpha": 0.00001
+    },
+    "187": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.4,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400,
+
+        "simulations": 5000,
+        "grad_bandit_alpha": 0.0002
+    },
+    "188": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.1,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.996,
+        "eps_greedy_epsilon_decay_factor_actor": 0.996,
+        "episodes": 400,
+
+        "memory_capacity": 20000,
+        "simulations": 5000,
+        "grad_bandit_alpha": 0.001
+    },
+    "189": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.997,
+        "eps_greedy_epsilon_decay_factor_actor": 0.997,
+        "episodes": 400,
+        "n_actors": 24,
+
+        "simulations": 5000,
+        "grad_bandit_alpha": 0.0075
     }
 }
