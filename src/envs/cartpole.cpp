@@ -28,7 +28,7 @@ std::tuple<std::vector<float>, double, bool>
 CartPoleEnv::step(int action) {
   steps += 1;
   if (steps >= max_steps)
-    return {state, 0., true};
+    return {state, 1., true};
 
   float x = state[0];
   float x_dot = state[1];
