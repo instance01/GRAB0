@@ -11,10 +11,14 @@ CartPoleEnv::CartPoleEnv() {
   reset();
 
   // State is already normalized well enough..
-  // TODO: stddev=2 for velocities is pulled out of my ass..
   expected_mean = {0., 0., 0., 0.};
-  expected_stddev = {5., 2., 1., 2.};
-  max_steps = 200;
+
+  // Used to be {5., 2., 1., 2.}, later {2.5, 2.5, 0.2, 2.5}.
+  // For now it seems normalization is not needed. But might have to re-check later.
+  expected_stddev = {1., 1., 1., 1.};
+
+  // Used to be 200, but for now testing with 400.
+  max_steps = 400;
 }
 
 CartPoleEnv::CartPoleEnv(CartPoleEnv &other) {
