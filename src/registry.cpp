@@ -13,13 +13,13 @@ Registry::save_if_best(Game game, double reward) {
     best_reward = reward;
     best_game = game;
 
-    for (auto actions : game.mcts_actions) {
-        for (auto a : actions) {
-            std::cout << a << " ";
-        }
-        std::cout << "|";
-    }
-    std::cout << std::endl << reward << std::endl;
+    // for (auto actions : game.mcts_actions) {
+    //     for (auto a : actions) {
+    //         std::cout << a << " ";
+    //     }
+    //     std::cout << "|";
+    // }
+    // std::cout << std::endl << reward << std::endl;
 
     replay_buffer->add(std::make_shared<Game>(std::move(game)));
   }
