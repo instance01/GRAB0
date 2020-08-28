@@ -42,7 +42,7 @@ A2CNetImpl::A2CNetImpl(
     i += 2;
   }
 
-  action_head = register_module("a", torch::nn::Linear(n_features_before, 3));
+  action_head = register_module("a", torch::nn::Linear(n_features_before, n_actions));
   value_head = register_module("v", torch::nn::Linear(n_features_before, 1));
 
   action_head->reset_parameters();
@@ -192,6 +192,7 @@ A2CLearner::update(std::shared_ptr<Game> game) {
       normalized_returns,
       torch::nn::SmoothL1LossOptions(torch::kSum)
   );
+  value_loss /= mcts_actions.size(0);
 
   torch::Tensor loss = cross_entropy + value_loss;
 
