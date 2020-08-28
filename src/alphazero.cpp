@@ -180,7 +180,7 @@ std::vector<int> run_actors(
   // If using gradient bandits: Add one super greedy bandit.
   std::string bandit_type = params["bandit_type"];
   if (bandit_type == "grad") {
-    auto lambda2 = [env, &params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
+    auto lambda2 = [env, params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
       // 'true' denotes greedy.
       return run_actor(env, params, a2c_agent, n_episode, registry, true);
     };

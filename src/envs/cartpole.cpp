@@ -16,9 +16,7 @@ CartPoleEnv::CartPoleEnv() {
   // Used to be {5., 2., 1., 2.}, later {2.5, 2.5, 0.2, 2.5}.
   // For now it seems normalization is not needed. But might have to re-check later.
   expected_stddev = {1., 1., 1., 1.};
-
-  // Used to be 200, but for now testing with 400.
-  max_steps = 400;
+  max_steps = 200;
 }
 
 CartPoleEnv::CartPoleEnv(CartPoleEnv &other) {
