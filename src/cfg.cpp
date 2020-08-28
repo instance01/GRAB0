@@ -62,6 +62,9 @@ json get_default(std::string base) {
       {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
       {"do_warmup", false},
       {"n_warmup", 100},
+      {"follow_a2c", false},
+      {"eval_break_on_good_avg_reward", false},
+      {"eval_min_avg_reward", -110},
 
       // Other
       {"reward_exponent", 1},
@@ -122,6 +125,9 @@ json get_default(std::string base) {
       {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
       {"do_warmup", false},
       {"n_warmup", 100},
+      {"follow_a2c", false},
+      {"eval_break_on_good_avg_reward", false},
+      {"eval_min_avg_reward", -110},
 
       // Other
       {"reward_exponent", 1},
@@ -177,6 +183,9 @@ json get_default(std::string base) {
       {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
       {"do_warmup", false},
       {"n_warmup", 100},
+      {"follow_a2c", false},
+      {"eval_break_on_good_avg_reward", false},
+      {"eval_min_avg_reward", -110},
 
       // Other
       {"reward_exponent", 1},
@@ -232,6 +241,9 @@ json get_default(std::string base) {
       {"grad_bandit_tau_schedule_k", {0, 500, 1000}},
       {"do_warmup", false},
       {"n_warmup", 100},
+      {"follow_a2c", false},
+      {"eval_break_on_good_avg_reward", false},
+      {"eval_min_avg_reward", -110},
 
       // Other
       {"reward_exponent", 1},
