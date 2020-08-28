@@ -26,7 +26,7 @@ Bad = B; Ok = K; Good = G
 | 167 | `` | | | |
 | 168 | `Aug12-21:32:58-921-peridot.cip.ifi.lmu.de-mtcar-168` | | 0/2 | See comment at:166. |
 | 169 | `` | | | |
-| 170 | `` | | | |
+| 170 | `` | | | One good run. Keep this one in mind. |
 | 171 | `` | | | |
 | 172 | `` | | | |
 | 173 | `` | | | |
@@ -42,3 +42,10 @@ Bad = B; Ok = K; Good = G
 | 183 | `` | | | |
 | 184 | `` | | | `simulations=1000` |
 | 185 | `` | | | |
+| 186 | `` | | | |
+| 187 | `` | | | |
+| 188 | `` | | | |
+| 189 | `` | | | |
+| cart1-cart47 | `runs_grab3_cart.tar.xz`| | | cart38 is the favorite, learns 20/20. Others include cart40, cart41. |
+| 190 | `` | | | |
+| 191 | `` | | | |

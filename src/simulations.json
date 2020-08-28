@@ -1337,5 +1337,1283 @@
 
         "simulations": 5000,
         "grad_bandit_alpha": 0.0075
+    },
+    "cart2": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.99,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99,
+        "episodes": 400,
+        "n_actors": 9,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0185
+    },
+    "cart3": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 200,
+        "n_actors": 19,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0185
+    },
+    "cart4": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 200,
+        "n_actors": 19,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0185,
+
+        "alpha": 0.001
+    },
+    "cart5": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 200,
+        "n_actors": 19,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0185,
+
+        "alpha": 0.003
+    },
+    "cart6": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 200,
+        "n_actors": 19,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0185,
+
+        "do_warmup": true,
+        "alpha": 0.005,
+        "train_steps": 5000
+    },
+    "cart7": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 200,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0185,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.001,
+        "train_steps": 2000,
+        "memory_capacity": 50000,
+        "net_architecture": [128, 128]
+    },
+    "cart8": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 200,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0155,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.0007,
+        "train_steps": 8000,
+        "memory_capacity": 50000,
+        "net_architecture": [128, 128]
+    },
+    "cart9": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 400,
+        "n_actors": 99,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0115,
+
+        "do_warmup": true,
+        "n_warmup": 300,
+        "alpha": 0.0007,
+        "train_steps": 9000,
+        "memory_capacity": 150000,
+        "net_architecture": [128, 128]
+    },
+    "cart10": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.3,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 400,
+        "n_actors": 99,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0105,
+
+        "do_warmup": true,
+        "n_warmup": 300,
+        "alpha": 0.0007,
+        "train_steps": 9000,
+        "memory_capacity": 150000,
+        "net_architecture": [128, 128]
+    },
+    "cart11": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.3,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 400,
+        "n_actors": 199,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0095,
+
+        "do_warmup": true,
+        "n_warmup": 400,
+        "alpha": 0.001,
+        "train_steps": 9000,
+        "memory_capacity": 150000,
+        "net_architecture": [128, 128]
+    },
+    "cart12": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.6,
+        "dirichlet_frac": 0.5,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 400,
+        "n_actors": 249,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0095,
+
+        "do_warmup": true,
+        "n_warmup": 400,
+        "alpha": 0.001,
+        "train_steps": 9000,
+        "memory_capacity": 150000
+    },
+    "cart13": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.3,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 400,
+        "n_actors": 249,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0115,
+
+        "do_warmup": true,
+        "n_warmup": 400,
+        "alpha": 0.001,
+        "train_steps": 9000,
+        "memory_capacity": 500,
+        "net_architecture": [64, 64, 64]
+    },
+    "cart14": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.3,
+        "eps_greedy_epsilon_decay_factor_train": 0.999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 400,
+        "n_actors": 249,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0115,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 400,
+        "alpha": 0.001,
+        "train_steps": 9000,
+        "memory_capacity": 150000,
+        "net_architecture": [64, 64, 64]
+    },
+    "cart15": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.3,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0105,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.003,
+        "train_steps": 6000,
+        "memory_capacity": 50000,
+        "net_architecture": [128, 128]
+    },
+    "cart16": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 150,
+        "grad_bandit_alpha": 0.0105,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.005,
+        "train_steps": 4000,
+        "memory_capacity": 50000,
+        "net_architecture": [128, 128]
+    },
+    "cart17": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.005,
+        "train_steps": 4000,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart18": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 4000,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart19": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.0001,
+        "train_steps": 4000,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart20": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.01,
+        "train_steps": 4000,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart21": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.1,
+        "train_steps": 4000,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart22": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.996,
+        "eps_greedy_epsilon_decay_factor_actor": 0.996,
+        "episodes": 400,
+        "n_actors": 99,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.00005,
+        "train_steps": 3000,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart23": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.996,
+        "eps_greedy_epsilon_decay_factor_actor": 0.996,
+        "episodes": 400,
+        "n_actors": 99,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.00005,
+        "train_steps": 2500,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "test": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.992,
+        "eps_greedy_epsilon_decay_factor_actor": 0.992,
+        "episodes": 400,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.0001,
+        "train_steps": 4000,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart24": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9992,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
+        "episodes": 500,
+        "n_actors": 19,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.0005,
+        "train_steps": 200,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart25": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9992,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
+        "episodes": 500,
+        "n_actors": 19,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.00005,
+        "train_steps": 200,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64]
+    },
+    "cart26": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9999,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.00001,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [64, 64, 32]
+    },
+    "cart27": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0155,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.01,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart28": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart29": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.2,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.999995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart30": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.0001,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32],
+        "gamma": 1.0
+    },
+    "cart31": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.0001,
+        "train_steps": 500,
+        "memory_capacity": 15000,
+        "net_architecture": [256, 128, 64],
+        "gamma": 1.0
+    },
+    "cart32": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart33": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.005,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart34": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart35": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.001,
+        "train_steps": 700,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart36": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 99,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart37": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.9995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "episodes": 500,
+        "n_actors": 99,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 1000,
+        "net_architecture": [128, 64, 32]
+    },
+    "cart38": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart39": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 5000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart40": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 500,
+        "memory_capacity": 15000,
+        "net_architecture": [256, 256, 128],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart41": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 500,
+        "n_actors": 149,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.001,
+        "train_steps": 900,
+        "memory_capacity": 15000,
+        "net_architecture": [256, 256, 128],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart42": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 500,
+        "n_actors": 149,
+        "n_procs": 5,
+        "n_input_features": 4,
+
+        "simulations": 300,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 100,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart43": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.991,
+        "eps_greedy_epsilon_decay_factor_actor": 0.991,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 200,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.001,
+        "train_steps": 300,
+        "memory_capacity": 4000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart44": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 100,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.0007,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart45": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.99995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 100,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.0007,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart46": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.2,
+        "eps_greedy_epsilon_decay_factor_train": 0.99999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 100,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.0001,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "cart47": {
+        "base": "BT20",
+        "n_input_features": 2,
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.5,
+        "dirichlet_frac": 0.3,
+        "eps_greedy_epsilon_decay_factor_train": 0.99999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.991,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 4,
+
+        "simulations": 100,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.0001,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32],
+
+        "follow_a2c": true,
+        "eval_break_on_good_avg_reward": true,
+        "eval_min_avg_reward": 195
+    },
+    "190": {
+        "base": "BT20",
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.3,
+        "dirichlet_frac": 0.1,
+        "eps_greedy_epsilon_decay_factor_train": 0.995,
+        "eps_greedy_epsilon_decay_factor_actor": 0.995,
+        "episodes": 500,
+        "n_actors": 49,
+        "n_procs": 8,
+        "n_input_features": 2,
+
+        "simulations": 100,
+        "grad_bandit_alpha": 0.0055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 200,
+        "alpha": 0.0007,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32]
+    },
+    "191": {
+        "base": "BT20",
+        "schedule_alpha": true,
+        "n_desired_eval_len": 100,
+
+        "dirichlet_alpha": 0.4,
+        "dirichlet_frac": 0.2,
+        "eps_greedy_epsilon_decay_factor_train": 0.999,
+        "eps_greedy_epsilon_decay_factor_actor": 0.999,
+        "episodes": 500,
+        "n_actors": 29,
+        "n_procs": 8,
+        "n_input_features": 2,
+
+        "simulations": 100,
+        "grad_bandit_alpha": 0.055,
+
+        "prioritized_sampling": false,
+
+        "do_warmup": true,
+        "n_warmup": 1000,
+        "alpha": 0.0007,
+        "train_steps": 300,
+        "memory_capacity": 15000,
+        "net_architecture": [128, 64, 32]
     }
 }
