@@ -69,7 +69,7 @@ std::tuple<int, double, double> evaluate(EnvWrapper env, json &params, A2CLearne
     registry_game.states = states;
     registry_game.rewards = rewards;
     registry_game.mcts_actions = mcts_actions;
-    registry->save_if_best(registry_game, total_reward);
+    registry->save_if_best(registry_game, total_reward / (j + 1));
 
     min_len = std::min(min_len, (int) actions.length());
     max_len = std::max(max_len, (int) actions.length());
