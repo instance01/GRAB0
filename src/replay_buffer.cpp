@@ -56,7 +56,7 @@ ReplayBuffer::_prioritized(std::vector<double> rewards) {
 std::shared_ptr<Game>
 ReplayBuffer::sample() {
   int idx = 0;
-  if (prioritized_sampling) {
+  if (!prioritized_sampling) {
     idx = _uniform();
   } else {
     auto rewards = get_rewards();
