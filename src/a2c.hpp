@@ -54,6 +54,6 @@ class A2CLearner {
     std::pair<torch::Tensor, torch::Tensor> predict_policy(torch::Tensor samples_);
     std::pair<torch::Tensor, torch::Tensor> predict_policy(std::vector<std::vector<float>> states);
     torch::Tensor _calc_normalized_rewards(std::vector<double> rewards);
-    torch::Tensor update(std::shared_ptr<Game> game);
+    torch::Tensor update(std::shared_ptr<Game> game, int n_episode, bool do_print);
 };
 #endif
