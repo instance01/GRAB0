@@ -149,7 +149,7 @@ A2CLearner::predict_policy(std::vector<std::vector<float>> states) {
 }
 
 torch::Tensor
-A2CLearner::update(std::shared_ptr<Game> game, int n_episode, bool do_print) {
+A2CLearner::update(std::shared_ptr<Game> game, int n_episode, bool debug_print) {
   policy_net->train();
 
   // Prepare data.
@@ -196,7 +196,7 @@ A2CLearner::update(std::shared_ptr<Game> game, int n_episode, bool do_print) {
 
   torch::Tensor loss = cross_entropy + value_loss;
 
-  if (do_print) {
+  if (debug_print) {
     std::cout << cross_entropy.item<float>() << " " << value_loss.item<float>() << std::endl;
     std::cout << policy_net->action_head->weight << std::endl;
     std::cout << policy_net->action_head->bias << std::endl;

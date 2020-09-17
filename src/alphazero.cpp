@@ -1,3 +1,4 @@
+#include <random>
 #include <iostream>
 #include <algorithm>
 #include <torch/torch.h>
@@ -11,9 +12,13 @@
 #include "gradient_bandit.hpp"
 #include "fuzz_bandit.hpp"
 #include "util.hpp"
+#include "gradient_bandit_tree.hpp"
 
 
 std::tuple<int, double, double> evaluate(EnvWrapper env, json &params, A2CLearner a2c_agent, Registry *registry) {
+  std::random_device rd;
+  std::mt19937 generator(rd());
+
   env = *env.clone();
   int n_actions = params["n_actions"];
 
@@ -29,11 +34,14 @@ std::tuple<int, double, double> evaluate(EnvWrapper env, json &params, A2CLearne
     std::vector<std::vector<double>> mcts_actions;
     std::vector<double> rewards;
 
-    std::vector<float> state = env.reset();
+    std::vector<float> state = env.reset(generator);
 
     bool done = false;
     std::string actions = "";
 
+    std::cout << std::setprecision(3);
+    int p = 0;
+    double curr_reward = 0;
     while (!done) {
       torch::Tensor action_probs;
       torch::Tensor val;
@@ -57,14 +65,14 @@ std::tuple<int, double, double> evaluate(EnvWrapper env, json &params, A2CLearne
 
       double reward;
       std::tie(state, reward, done) = env.step(action);
-      total_reward += reward;
+      curr_reward += reward;
       actions += std::to_string(action);
 
       rewards.push_back(reward);
     }
-    if (j == 0)
-      std::cout << std::endl;
+    total_reward += curr_reward;
 
+    std::cout << curr_reward << " ";
     Game registry_game;
     registry_game.states = states;
     registry_game.rewards = rewards;
@@ -77,6 +85,7 @@ std::tuple<int, double, double> evaluate(EnvWrapper env, json &params, A2CLearne
     total_length_sq += std::pow(actions.length(), 2);
     // std::cout << "EVAL " << actions << " " << actions.length() << std::endl;
   }
+  std::cout << std::endl;
   double var = (total_length_sq - (std::pow(total_length, 2) / n_iters)) / n_iters;
   double avg = total_reward / n_iters;
   std::cout << "AVG " << avg <<  " |VAR " << var << " |MIN " << min_len << " |MAX " << max_len << std::endl;
@@ -150,6 +159,7 @@ std::vector<int> run_actors(
     ReplayBuffer *replay_buffer,
     Registry *registry
 ) {
+  std::random_device rd;
   int n_actors = params["n_actors"];
   int n_procs = params["n_procs"];
   std::vector<int> actor_lengths;
@@ -159,11 +169,11 @@ std::vector<int> run_actors(
 
   // Run self play games in n_procs parallel processes.
   auto pool = SimpleThreadPool(n_procs);
-  auto lambda = [env, params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
-    return run_actor(env, params, a2c_agent, n_episode, registry);
-  };
   std::vector<Task*> tasks;
   for (int i = 0; i < n_actors; ++i) {
+    auto lambda = [i, &rd, env, params, a2c_agent, n_episode, registry, replay_buffer]() -> std::shared_ptr<Game> {
+      return run_actor(i, rd, env, params, a2c_agent, n_episode, registry, replay_buffer);
+    };
     Task *task = new Task(lambda);
     pool.add_task(task);
     tasks.push_back(task);
@@ -171,6 +181,9 @@ std::vector<int> run_actors(
   if (do_warmup) {
     params["do_warmup"] = false;
     for (int i = 0; i < n_warmup; ++i) {
+      auto lambda = [i, &rd, env, params, a2c_agent, n_episode, registry, replay_buffer]() -> std::shared_ptr<Game> {
+        return run_actor(i + 200, rd, env, params, a2c_agent, n_episode, registry, replay_buffer);
+      };
       Task *task = new Task(lambda);
       pool.add_task(task);
       tasks.push_back(task);
@@ -180,9 +193,9 @@ std::vector<int> run_actors(
   // If using gradient bandits: Add one super greedy bandit.
   std::string bandit_type = params["bandit_type"];
   if (bandit_type == "grad") {
-    auto lambda2 = [env, params, a2c_agent, n_episode, registry]() -> std::shared_ptr<Game> {
+    auto lambda2 = [&rd, env, params, a2c_agent, n_episode, registry, replay_buffer]() -> std::shared_ptr<Game> {
       // 'true' denotes greedy.
-      return run_actor(env, params, a2c_agent, n_episode, registry, true);
+      return run_actor(1000, rd, env, params, a2c_agent, n_episode, registry, replay_buffer, true);
     };
     Task *task = new Task(lambda2);
     pool.add_task(task);
@@ -232,6 +245,8 @@ std::pair<int, double> episode(
   auto rewards = replay_buffer->get_rewards();
   int size_ = rewards.size() - n_actors - 1;
   for (int i = rewards.size() - 1; i > size_; --i) {
+    if (replay_buffer->buffer[i]->is_greedy)
+      std::cout << "G";
     std::cout << rewards[i] << " ";
   }
   std::cout << std::endl;
@@ -266,7 +281,9 @@ std::pair<int, double> episode(
   float eps_greedy_epsilon_decay_factor = params["eps_greedy_epsilon_decay_factor_train"];
 
   float epsilon = std::pow(eps_greedy_epsilon_decay_factor, n_episode);
+  std::cout << "train epsilon " << epsilon << std::endl;
 
+  // TRAINING.
   a2c_agent.policy_net->train();
   for (int i = 0; i < train_steps; ++i) {
     std::shared_ptr<Game> game;
@@ -275,13 +292,31 @@ std::pair<int, double> episode(
     if (use_eps_greedy_learning)
       greedy = epsgreedy_distribution(generator) > epsilon;
 
+    // a2c debug prints
+    bool debug_print = (i == 0) || (i == (train_steps - 1));
+
     if (greedy) {
-      game = replay_buffer->get_best();
+      // When greedy, train with top games.
+      std::cout << "TOP: ";
+      auto games = replay_buffer->get_top();
+      for (auto game : games) {
+        auto loss = a2c_agent.update(game, n_episode, debug_print);
+        std::string actions;
+        for (auto mcts_action : game->mcts_actions) {
+          auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
+          actions += std::to_string(std::distance(mcts_action.begin(), max_el));
+        }
+        std::cout << actions.size() << " ";
+        sample_lens.push_back(actions.size());
+        losses.push_back(loss.item<double>());
+      }
+      std::cout << std::endl;
+      continue; // !!
     } else {
       game = replay_buffer->sample();
     }
 
-    auto loss = a2c_agent.update(game);
+    auto loss = a2c_agent.update(game, n_episode, debug_print);
 
     std::string actions;
     for (auto mcts_action : game->mcts_actions) {
@@ -341,9 +376,20 @@ std::pair<int, double> episode(
   return {eval_length, total_reward};
 }
 
-std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c_agent, int n_episode, Registry *registry, bool greedy_bandit) {
+std::shared_ptr<Game> run_actor(
+    int idx,
+    std::random_device &rd,
+    EnvWrapper orig_env,
+    json params,
+    A2CLearner a2c_agent,
+    int n_episode,
+    Registry *registry,
+    ReplayBuffer *replay_buffer,
+    bool greedy_bandit) {
+  thread_local std::mt19937 generator(rd());
+
   EnvWrapper env = *orig_env.clone();
-  auto state = env.reset();
+  auto state = env.reset(generator);
 
   int n_actions = params["n_actions"];
 
@@ -352,13 +398,10 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
   Bandit *mcts_agent;
   if (bandit_type == "mcts") {
     mcts_agent = new MCTS(orig_env, a2c_agent, params);
-  } else if (bandit_type == "grad") {
-    mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry, greedy_bandit);
   }
-
-  // TODO Make sure this is a good idea to init here.
-  std::random_device rd;
-  std::mt19937 generator(rd());
+  if (bandit_type == "grad_tree") {
+    mcts_agent = new GradientBanditTreeSearch(orig_env, a2c_agent, params, generator);
+  }
 
   int horizon = params["horizon"];
 
@@ -372,15 +415,48 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
     greedy = epsgreedy_distribution(generator) > epsilon;
   }
 
+  // Allow following a2c at the beginning for exploration.
+  // Following the bandit is how AlphaZero does it. Following a2c is how this paper does it:
+  // `Thinking Fast and Slow with Deep Learning and Tree Search`.
+  float eps_greedy_epsilon_decay_factor_a2c = params["eps_greedy_epsilon_decay_factor_follow_a2c"];
+  epsilon = std::pow(eps_greedy_epsilon_decay_factor_a2c, n_episode);
+  bool follow_bandit_greedily = epsgreedy_distribution(generator) > epsilon;
+
+  int follow_after_ep = params["experimental_follow_after_ep"];
+  float follow_eps_power = params["experimental_follow_eps_power"];
+  int follow_after_ep2 = params["experimental_follow_after_ep2"];
+  float follow_eps_power2 = params["experimental_follow_eps_power2"];
+  if (n_episode > follow_after_ep) {
+      epsilon = std::pow(epsilon, follow_eps_power);
+      follow_bandit_greedily = epsgreedy_distribution(generator) > epsilon;
+  }
+
+  if (n_episode > follow_after_ep2) {
+      epsilon = std::pow(epsilon, follow_eps_power2);
+      follow_bandit_greedily = epsgreedy_distribution(generator) > epsilon;
+  }
+
   if (greedy_bandit)
     greedy = true;
+
+  std::ostringstream oss;
+  oss << std::setprecision(3);
 
   double total_reward = 0;
   bool done = false;
   std::shared_ptr<Game> game = std::make_shared<Game>();
   game->is_greedy = greedy;
-  for (int i = 0; i < horizon; ++i) {
-    auto mcts_action = mcts_agent->policy(i, env, state);
+  std::shared_ptr<Game> game2 = std::make_shared<Game>();
+  game2->is_greedy = true;
+  for (int i = 0; i < env.env->max_steps; ++i) {
+    bool do_print = (i == 0 && idx == 2);
+    if (bandit_type == "grad") {
+      mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry, generator, do_print, greedy_bandit);
+    }
+    auto mcts_action = mcts_agent->policy(0, env, state);
+    if (bandit_type == "grad") {
+      delete mcts_agent;
+    }
 
     int sampled_action;
     if (greedy) {
@@ -395,26 +471,15 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
     torch::Tensor action_probs;
     std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({state});
 
-    // Allow following a2c at the beginning for exploration.
-    // Following the bandit is how AlphaZero does it. Following a2c is how this paper does it:
-    // `Thinking Fast and Slow with Deep Learning and Tree Search`.
-    bool follow_bandit_greedily = true;
-    if (params["follow_a2c"]) {
-      epsilon = std::pow(epsilon, 2);
-      follow_bandit_greedily = epsgreedy_distribution(generator) > epsilon;
-      if (n_episode > 100) {
-          epsilon = std::pow(epsilon, 4);
-          follow_bandit_greedily = epsgreedy_distribution(generator) > epsilon;
-          params["train_steps"] = 1000;
-      }
-    }
+    int mcts_sampled_action = sampled_action;
 
     // Here we follow a2c.
+    float* action_probs_arr = action_probs.data_ptr<float>();
+    auto vec = std::vector<float>(action_probs_arr, action_probs_arr + n_actions);
+    std::discrete_distribution<int> distribution_(vec.begin(), vec.end());
+    int a2c_sampled_action = distribution_(generator);
     if (!follow_bandit_greedily) {
-      float* action_probs_arr = action_probs.data_ptr<float>();
-      auto vec = std::vector<float>(action_probs_arr, action_probs_arr + n_actions);
-      std::discrete_distribution<int> distribution_(vec.begin(), vec.end());
-      sampled_action = distribution_(generator);
+      sampled_action = a2c_sampled_action;
     }
 
     std::vector<float> next_state;
@@ -423,24 +488,44 @@ std::shared_ptr<Game> run_actor(EnvWrapper orig_env, json params, A2CLearner a2c
 
     total_reward += reward;
 
+    // If tough_ce=false, we can keep a game2 object here with a fake greedy path (one-hot encoded)
+    std::vector<double> soft_greedy_action_probs(n_actions, 0.00001);
+    if (!params["tough_ce"] && !greedy) {
+      // Adds up to slightly more than 1... TODO Fix at some point.
+      soft_greedy_action_probs[sampled_action] = 0.99999;
+    }
+
     game->states.push_back(state);
     game->rewards.push_back(reward);
     game->mcts_actions.push_back(mcts_action);
 
-    // TODO: Violating encapsulation - not great, not terrible (3.6)
-    mcts_agent->history.rewards.push_back(reward);
+    game2->states.push_back(state);
+    game2->rewards.push_back(reward);
+    game2->mcts_actions.push_back(soft_greedy_action_probs);
+
+    oss << state[0] << " " << state[2] << " (" << a2c_sampled_action << " " << mcts_sampled_action << ") | ";
 
     state = next_state;
 
     if (done)
       break;
   }
+  //std::cout << oss.str() << std::endl << std::endl;;
 
   registry->save_if_best(*game, total_reward);
 
-  // std::cout << mcts_actions.size() << " " << std::flush;
-  // std::cout << mcts_actions << std::endl;
-  delete mcts_agent;
+  float experimental_top_cutoff = params["experimental_top_fill"];
+  bool experimental_top_fill = params["experimental_top_fill"];
+  if (!params["tough_ce"] && !greedy && experimental_top_fill) {
+    std::cout << "## " << game2->mcts_actions.size() << std::endl;
+    registry->save_if_best(*game2, total_reward);
+    if (total_reward >= experimental_top_cutoff)
+      replay_buffer->add(game2);
+  }
+
+  if (bandit_type != "grad") {
+    delete mcts_agent;
+  }
   return game;
 }
 
@@ -452,6 +537,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
   auto start_time = std::chrono::high_resolution_clock::now();
   ReplayBuffer *replay_buffer = new ReplayBuffer(
     params["memory_capacity"],
+    params["experimental_top_cutoff"],
     params["prioritized_sampling"]
   );
   auto a2c_agent = A2CLearner(params, env);
@@ -490,6 +576,7 @@ std::tuple<int, int, double> run(EnvWrapper env, json params, int n_run, TensorB
   //std::vector<double> rewards;
   for (; i < params["episodes"]; ++i) {
     std::cout << "Episode " << i << std::endl;
+
     std::tie(eval_len, total_reward) = episode(
         writer,
         n_run,

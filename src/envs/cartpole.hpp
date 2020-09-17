@@ -33,7 +33,7 @@ class CartPoleEnv : public Env {
     CartPoleEnv(CartPoleEnv &other);
     ~CartPoleEnv() {};
 
-    std::vector<float> reset();
+    std::vector<float> reset(std::mt19937 generator);
     std::tuple<std::vector<float>, double, bool> step(int action);
 };
 #endif

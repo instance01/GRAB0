@@ -8,7 +8,7 @@ CartPoleEnv::CartPoleEnv() {
   std::random_device rd;
   generator = std::mt19937(rd());
 
-  reset();
+  reset(generator);
 
   // State is already normalized well enough..
   expected_mean = {0., 0., 0., 0.};
@@ -62,7 +62,7 @@ CartPoleEnv::step(int action) {
 }
 
 std::vector<float>
-CartPoleEnv::reset() {
+CartPoleEnv::reset(std::mt19937 generator) {
   steps = 0;
   std::uniform_real_distribution<float> distribution(-.05, .05);
   state = {

@@ -6,7 +6,10 @@
 
 
 MCTS::MCTS(EnvWrapper env, A2CLearner a2c_agent, json params) : params(params), a2c_agent(a2c_agent) {
-  auto obs = env.reset();
+  // TODO Should use global_generator from alphazero.
+  std::random_device rd;
+  std::mt19937 generator(rd());
+  auto obs = env.reset(generator);
   this->env = std::move(env.clone());
 
   this->root_node = std::make_shared<Node>();

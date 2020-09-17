@@ -49,8 +49,8 @@ EnvWrapper::step(int action) {
 }
 
 std::vector<float>
-EnvWrapper::reset() {
-  return env->reset();
+EnvWrapper::reset(std::mt19937 &generator) {
+  return env->reset(generator);
 }
 
 std::unique_ptr<EnvWrapper>

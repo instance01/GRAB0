@@ -1,5 +1,6 @@
 #ifndef ENV_W_HEADER
 #define ENV_W_HEADER
+#include <random>
 #include <string>
 #include <variant>
 #include <vector>
@@ -25,7 +26,7 @@ class EnvWrapper {
     void init(std::string game, json params);
 
     std::tuple<std::vector<float>, double, bool> step(int action);
-    std::vector<float> reset();
+    std::vector<float> reset(std::mt19937 &generator);
     std::unique_ptr<EnvWrapper> clone();
 };
 #endif

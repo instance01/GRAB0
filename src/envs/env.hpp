@@ -1,5 +1,6 @@
 #ifndef ENV_HEADER
 #define ENV_HEADER
+#include <random>
 #include <string>
 #include <variant>
 #include <vector>
@@ -19,6 +20,6 @@ class Env {
     int max_steps;
 
     virtual std::tuple<std::vector<float>, double, bool> step(int action) {return {};};
-    virtual std::vector<float> reset() {return {};};
+    virtual std::vector<float> reset(std::mt19937 generator) {return {};};
 };
 #endif

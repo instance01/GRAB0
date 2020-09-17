@@ -21,7 +21,8 @@ GridWorldEnv::GridWorldEnv(
     int width, int height, std::set<std::pair<int, int>> blocks
 ) : width(width), height(height), blocks(blocks) {
   max_steps = width * height * 4;
-  reset();
+  std::mt19937 gen;
+  reset(gen);
 
   expected_mean = {(width - 1) / 2., (height - 1) / 2., .75};
   // std dev of uniform distribution:
@@ -67,7 +68,7 @@ GridWorldEnv::move(int action) {
 }
 
 std::vector<float>
-GridWorldEnv::reset() {
+GridWorldEnv::reset(std::mt19937 generator) {
   start = std::make_pair(1, 1);
   goal = std::make_pair(width - 2, height - 2);
   dir = 0;

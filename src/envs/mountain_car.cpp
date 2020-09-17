@@ -18,7 +18,7 @@ MtCarEnv::MtCarEnv(float goal_velocity) : goal_velocity(goal_velocity) {
   std::random_device rd;
   generator = std::mt19937(rd());
 
-  reset();
+  reset(generator);
 
   // State is already normalized well enough..
   expected_mean = {0., 0.};
@@ -27,7 +27,7 @@ MtCarEnv::MtCarEnv(float goal_velocity) : goal_velocity(goal_velocity) {
 }
 
 std::vector<float>
-MtCarEnv::reset() {
+MtCarEnv::reset(std::mt19937 generator) {
   steps = 0;
   std::uniform_real_distribution<float> distribution(-.6, -.4);
   state = {
