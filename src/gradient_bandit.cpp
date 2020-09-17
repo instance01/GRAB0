@@ -2,10 +2,7 @@
 #include "gradient_bandit.hpp"
 
 
-SingleGradientBandit::SingleGradientBandit(json params) {
-  std::random_device dev;
-  generator = std::mt19937(dev());
-
+SingleGradientBandit::SingleGradientBandit(json params, std::mt19937 &generator) : generator(generator) {
   n_actions = params["n_actions"];
   n_iter = params["simulations"];
 
@@ -64,12 +61,16 @@ SingleGradientBandit::update(std::vector<double> action_probs, int action, doubl
   }
 }
 
-GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_agent, json params, Registry *registry, bool greedy_bandit)
-  : registry(registry), greedy_bandit(greedy_bandit)
+GradientBanditSearch::GradientBanditSearch(
+    EnvWrapper orig_env,
+    A2CLearner a2c_agent,
+    json params,
+    Registry *registry,
+    std::mt19937 &generator,
+    bool do_print,
+    bool greedy_bandit)
+  : a2c_agent(a2c_agent), params(params), registry(registry), generator(generator), do_print(do_print), greedy_bandit(greedy_bandit)
 {
-  std::random_device dev;
-  generator = std::mt19937(dev());
-
   n_actions = params["n_actions"];
   n_iter = params["simulations"];
   int horizon = params["horizon"];
@@ -87,7 +88,7 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
   // Clone env because it might be used by other parallel actors.
   env = *orig_env.clone();
 
-  std::vector<float> state = env_.reset();
+  std::vector<float> state = env_.reset(generator);
   int i = 0;
   for (; i < horizon; ++i) {
     // Evaluate current state and predict action probabilities.
@@ -108,7 +109,7 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
     float* action_probs_arr = action_probs.data_ptr<float>();
 
     // Create the bandit.
-    auto bandit = SingleGradientBandit(params);
+    auto bandit = SingleGradientBandit(params, generator);
     auto vec = std::vector<float>(action_probs_arr, action_probs_arr + n_actions);
     bandit.H = std::vector<double>(vec.begin(), vec.end());
     // Initialize with log.
@@ -140,7 +141,7 @@ GradientBanditSearch::GradientBanditSearch(EnvWrapper orig_env, A2CLearner a2c_a
     }
 
     // Create the bandit.
-    auto bandit = SingleGradientBandit(params);
+    auto bandit = SingleGradientBandit(params, this->generator);
     bandit.H = vec;
     bandits.push_back(bandit);
   }
@@ -165,10 +166,44 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
       }
     }
 
+    double alpha = params["dirichlet_alpha"];
+    double frac = params["dirichlet_frac"];
+
+    std::vector<float> obs = state;
+    bool done;
+
     // It could be that horizon is set higher than the maximum horizon of the environment.
     // So let's only loop until the size of bandits.
     int j = i;
     for (; j < (int) bandits.size(); ++j) {
+      if (!bandits[j].initialized) {
+        torch::Tensor action_probs;
+        std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({obs});
+
+        // Add Dirichlet noise.
+        std::gamma_distribution<double> distribution(alpha, 1.);
+        for (int q = 0; q < n_actions; ++q) {
+          double noise = distribution(generator);
+          action_probs[0][q] = action_probs[0][q] * (1 - frac) + noise * frac;
+        }
+
+        float* action_probs_arr = action_probs.data_ptr<float>();
+
+        // Create the bandit.
+        auto vec = std::vector<float>(action_probs_arr, action_probs_arr + n_actions);
+        bandits[j].H = std::vector<double>(vec.begin(), vec.end());
+        // Initialize with log.
+        for (int r = 0; r < (int) vec.size(); ++r) {
+          bandits[j].H[r] = std::log(vec[r]);
+          if (do_print)
+            std::cout << bandits[j].H[r] << " ";
+        }
+        if (do_print)
+          std::cout << " | ";
+
+        bandits[j].initialized = true;
+      }
+
       std::vector<double> action_probs;
       int action;
       std::tie(action_probs, action) = bandits[j].policy(tau);
@@ -176,9 +211,7 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
       actions.push_back(action);
       actions_probs_arr.push_back(action_probs);
 
-      std::vector<float> obs;
       double reward;
-      bool done;
       std::tie(obs, reward, done) = env.step(action);
 
       states.push_back(obs);
@@ -194,18 +227,18 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
       }
     }
 
-    Game game_ = history;
-    game_.states.insert(game_.states.end(), states.begin(), states.end());
-    game_.rewards.insert(game_.rewards.end(), rewards.begin(), rewards.end());
-    game_.mcts_actions.insert(game_.mcts_actions.end(), actions_probs_arr.begin(), actions_probs_arr.end());
-    double total_reward = std::accumulate(game_.rewards.begin(), game_.rewards.end(), 0.0);
-    registry->save_if_best(game_, total_reward);
+    double val = 0;
+    if (!done) {
+      torch::Tensor value;
+      std::tie(std::ignore, value) = a2c_agent.predict_policy({obs});
+      val = value.item<double>();
+    }
 
     // TODO Clean code.
     // Update all bandits from this index to the end.
     // For this, we need cumulative rewards.
     std::vector<double> cumulative_rewards;
-    double curr_sum = 0;
+    double curr_sum = val;
     for (std::vector<double>::reverse_iterator iter = rewards.rbegin(); iter != rewards.rend(); ++iter) {
       curr_sum += *iter;
       cumulative_rewards.push_back(curr_sum);
@@ -217,30 +250,16 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
     for (int m = 0; m < size; ++m) {
       bandits[m + i].update(actions_probs_arr[m], actions[m], cumulative_rewards[m]);
     }
-
-    // Update all bandits from 0 to i.
-    total_reward = std::accumulate(rewards.begin(), rewards.end(), 0.0);
-
-    cumulative_rewards = std::vector<double>();
-    curr_sum = 0;
-    for (std::vector<double>::reverse_iterator iter = game_.rewards.rbegin(); iter != game_.rewards.rend(); ++iter) {
-      curr_sum += *iter;
-      cumulative_rewards.push_back(curr_sum);
-    }
-    std::reverse(cumulative_rewards.begin(), cumulative_rewards.end());
-
-    for (int m = 0; m < i; ++m) {
-      auto mcts_action = game_.mcts_actions[m];
-      auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
-      int argmax_action = std::distance(mcts_action.begin(), max_el);
-
-      bandits[m].update(mcts_action, argmax_action, cumulative_rewards[m]);
-    }
   }
 
-  history.states.push_back(state);
-  // The following is done in alphazero..
-  // history.rewards.push_back(XXXXXXXXXX);
+  if (do_print) {
+    std::cout << std::endl;
+    std::cout << std::endl;
+    for (auto bandit : bandits) {
+      std::cout << bandit.H << " | ";
+    }
+    std::cout << std::endl;
+  }
 
   auto ret = bandits[i].softmax(1);
   history.mcts_actions.push_back(ret);

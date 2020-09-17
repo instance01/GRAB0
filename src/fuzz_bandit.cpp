@@ -74,14 +74,17 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
 
     auto a2c_agent = A2CLearner(params, orig_env);
 
+    std::random_device rd;
+    std::mt19937 generator(rd());
+
     EnvWrapper env = *orig_env.clone();
-    auto state = env.reset();
+    auto state = env.reset(generator);
 
     ReplayBuffer *replay_buffer = new ReplayBuffer(3000, false);
     Registry *registry = new Registry(replay_buffer);
 
     // true: greedy
-    GradientBanditSearch *mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry, true);
+    GradientBanditSearch *mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry, generator, true);
     for (int i = 0; i < (int) game_.mcts_actions.size(); ++i) {
       for (int j = 0; j < mcts_agent->bandits[i].H.size(); ++j) {
         mcts_agent->bandits[i].H[j] = std::log(game_.mcts_actions[i][j]);

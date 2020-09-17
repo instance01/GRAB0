@@ -12,6 +12,8 @@
 
 class SingleGradientBandit {
   public:
+    bool initialized = false;
+
     int n_actions;
     int n_iter;
 
@@ -26,7 +28,7 @@ class SingleGradientBandit {
     std::vector<double> prob_action;
     std::discrete_distribution<int> distribution;
 
-    SingleGradientBandit(json params);
+    SingleGradientBandit(json params, std::mt19937 &generator);
 
     std::vector<double> softmax(float tau);
     int sample(std::vector<double> prob_actions);
@@ -51,7 +53,12 @@ class GradientBanditSearch : public Bandit {
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
 
-    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry *registry, bool greedy_bandit=false);
+    A2CLearner a2c_agent;
+
+    json params;
+    bool do_print;
+
+    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry *registry, std::mt19937 &generator, bool do_print, bool greedy_bandit=false);
     ~GradientBanditSearch() {};
 
     void reset_policy_cache() {};
