@@ -6,8 +6,8 @@
 #include "replay_buffer.hpp"
 
 
-ReplayBuffer::ReplayBuffer(int window_size, bool prioritized_sampling)
-  : window_size(window_size), prioritized_sampling(prioritized_sampling)
+ReplayBuffer::ReplayBuffer(int window_size, float experimental_top_cutoff,bool prioritized_sampling)
+  : window_size(window_size), experimental_top_cutoff(experimental_top_cutoff), prioritized_sampling(prioritized_sampling)
 {
   std::random_device rd;
   generator = std::mt19937(rd());
@@ -98,4 +98,58 @@ ReplayBuffer::get_best() {
     return buffer[idx];
 
   return buffer[indices[idx]];
+}
+
+template <typename T, typename Compare>
+std::vector<std::size_t> sort_permutation(
+    const std::vector<T>& vec,
+    Compare compare)
+{
+    std::vector<std::size_t> p(vec.size());
+    std::iota(p.begin(), p.end(), 0);
+    std::sort(p.begin(), p.end(),
+        [&](std::size_t i, std::size_t j){ return compare(vec[i], vec[j]); });
+    return p;
+}
+
+template <typename T>
+std::vector<T> apply_permutation(
+    const std::vector<T>& vec,
+    const std::vector<std::size_t>& p)
+{
+    std::vector<T> sorted_vec(vec.size());
+    std::transform(p.begin(), p.end(), sorted_vec.begin(),
+        [&](std::size_t i){ return vec[i]; });
+    return sorted_vec;
+}
+
+std::vector<std::shared_ptr<Game>>
+ReplayBuffer::get_top() {
+  std::vector<double> rewards = get_rewards();
+  std::vector<int> indices;
+  std::vector<double> rewards_filtered;
+
+  for (int i = 0; i < (int) buffer.size(); ++i) {
+    if (buffer[i]->is_greedy) {
+      rewards_filtered.push_back(rewards[i]);
+      indices.push_back(i);
+    }
+  }
+
+  bool no_greedy_found = indices.size() == 0;
+
+  if (no_greedy_found)
+    return {};
+
+  // Sort rewards descending and apply permutation to indices.
+  auto p = sort_permutation(rewards_filtered, [](double a, double b){ return a > b; });
+  indices = apply_permutation(indices, p);
+
+  // Extract top greedy games
+  std::vector<std::shared_ptr<Game>> ret;
+  for (int i = 0; i < indices.size(); ++i) {
+    if (rewards[indices[i]] >= experimental_top_cutoff)
+        ret.push_back(buffer[indices[i]]);
+  }
+  return ret;
 }

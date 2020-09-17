@@ -13,8 +13,10 @@ class ReplayBuffer {
     bool prioritized_sampling = true;
     std::mt19937 generator;
 
+    float experimental_top_cutoff;
+
+    ReplayBuffer(int window_size, float experimental_top_cutoff, bool prioritized_sampling=false);
     ~ReplayBuffer() {};
-    ReplayBuffer(int window_size, bool prioritized_sampling=false);
 
     int _uniform();
     int _prioritized(std::vector<double> rewards);
@@ -27,5 +29,6 @@ class ReplayBuffer {
     std::vector<double> get_rewards();
     std::shared_ptr<Game> sample();
     std::shared_ptr<Game> get_best();
+    std::vector<std::shared_ptr<Game>> get_top();
 };
 #endif
