@@ -301,6 +301,7 @@ std::pair<int, double> episode(
       auto games = replay_buffer->get_top();
       for (auto game : games) {
         auto loss = a2c_agent.update(game, n_episode, debug_print);
+        debug_print = false;
         std::string actions;
         for (auto mcts_action : game->mcts_actions) {
           auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
@@ -311,7 +312,12 @@ std::pair<int, double> episode(
         losses.push_back(loss.item<double>());
       }
       std::cout << std::endl;
-      continue; // !!
+
+      if (games.size() == 0) {
+        game = replay_buffer->sample();
+      } else  {
+        continue; // !!
+      }
     } else {
       game = replay_buffer->sample();
     }
