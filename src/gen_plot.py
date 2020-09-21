@@ -67,23 +67,18 @@ def aggregate(path):
 
 
 def gen_tex_single_key(data, key):
-    data_q50 = smooth(np.percentile(data, 50, axis=0), 20)[10:-9]
-    data_q10 = smooth(np.percentile(data, 10, axis=0), 20)[10:-9]
-    data_q25 = smooth(np.percentile(data, 25, axis=0), 20)[10:-9]
-    data_q75 = smooth(np.percentile(data, 75, axis=0), 20)[10:-9]
-    data_q90 = smooth(np.percentile(data, 90, axis=0), 20)[10:-9]
-    q50_coords = ""
-    q10_coords = ""
-    q25_coords = ""
-    q75_coords = ""
-    q90_coords = ""
-    for i, (q50, q10, q25, q75, q90) in enumerate(
-            zip(data_q50, data_q10, data_q25, data_q75, data_q90)):
-        q50_coords += str((i, round(q50, 3)))
-        q10_coords += str((i, round(q10, 3)))
-        q25_coords += str((i, round(q25, 3)))
-        q75_coords += str((i, round(q75, 3)))
-        q90_coords += str((i, round(q90, 3)))
+    new_data = [
+        smooth(np.percentile(data, percentile, axis=0), 20)[10:-9]
+        for percentile in [50, 10, 25, 75, 90]
+    ]
+    coords = [
+        "".join(str((i, round(x, 3))) for i, x in enumerate(nd))
+        for nd in new_data
+    ]
+
+    red_line = ""
+    if "Eval" in key:
+        red_line = "".join(["(%d, 195)" % i for i, _ in enumerate(data[0])])
 
     return """
         \\begin{tikzpicture}
@@ -100,6 +95,8 @@ def gen_tex_single_key(data, key):
             \\addplot+[name path=D,black,line width=.1pt] coordinates {%s};
             \\addplot+[name path=E,black,line width=.1pt] coordinates {%s};
 
+            \\addplot+[name path=ZZZ,red,line width=.3pt] coordinates {%s};
+
             \\addplot[blue!50,fill opacity=0.2] fill between[of=A and B];
             \\addplot[blue!50,fill opacity=0.2] fill between[of=A and C];
             \\addplot[blue!50,fill opacity=0.2] fill between[of=A and D];
@@ -107,7 +104,7 @@ def gen_tex_single_key(data, key):
             \\end{axis}
         \\end{tikzpicture}
         """ % (
-            key, q50_coords, q10_coords, q25_coords, q75_coords, q90_coords
+            key, *coords, red_line
         )
 
 
