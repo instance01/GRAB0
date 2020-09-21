@@ -55,62 +55,95 @@ def aggregate(path):
             )
         agg_keys[key] = np.array(aggregated_)
 
+    shape_before = agg_keys[next(iter(agg_runs.keys()))].shape
+    data_ = agg_keys[next(iter(agg_runs.keys()))]
+    # # TODO !!! This is very specific. However, since I know my experiments..
+    # It means the last run was not finished yet. So we cannot use it.
+    if data_[-1][-1] < 195 and data_[-1].shape[0] < 1500:
+        for key in agg_runs:
+            agg_keys[key] = agg_keys[key][:-1]
+    print('filter', shape_before, agg_keys[next(iter(agg_runs.keys()))].shape)
     return agg_runs, agg_keys
 
 
-def gen_tex(agg_runs, agg_keys):
+def gen_tex_single_key(data, key):
+    data_q50 = smooth(np.percentile(data, 50, axis=0), 20)[10:-9]
+    data_q10 = smooth(np.percentile(data, 10, axis=0), 20)[10:-9]
+    data_q25 = smooth(np.percentile(data, 25, axis=0), 20)[10:-9]
+    data_q75 = smooth(np.percentile(data, 75, axis=0), 20)[10:-9]
+    data_q90 = smooth(np.percentile(data, 90, axis=0), 20)[10:-9]
+    q50_coords = ""
+    q10_coords = ""
+    q25_coords = ""
+    q75_coords = ""
+    q90_coords = ""
+    for i, (q50, q10, q25, q75, q90) in enumerate(
+            zip(data_q50, data_q10, data_q25, data_q75, data_q90)):
+        q50_coords += str((i, round(q50, 3)))
+        q10_coords += str((i, round(q10, 3)))
+        q25_coords += str((i, round(q25, 3)))
+        q75_coords += str((i, round(q75, 3)))
+        q90_coords += str((i, round(q90, 3)))
+
+    return """
+        \\begin{tikzpicture}
+            \\begin{axis}[
+                thick,smooth,no markers,
+                grid=both,
+                grid style={line width=.1pt, draw=gray!10},
+                xlabel={Steps},
+                ylabel={%s}]
+            ]
+            \\addplot+[name path=A,black,line width=1pt] coordinates {%s};
+            \\addplot+[name path=B,black,line width=.1pt] coordinates {%s};
+            \\addplot+[name path=C,black,line width=.1pt] coordinates {%s};
+            \\addplot+[name path=D,black,line width=.1pt] coordinates {%s};
+            \\addplot+[name path=E,black,line width=.1pt] coordinates {%s};
+
+            \\addplot[blue!50,fill opacity=0.2] fill between[of=A and B];
+            \\addplot[blue!50,fill opacity=0.2] fill between[of=A and C];
+            \\addplot[blue!50,fill opacity=0.2] fill between[of=A and D];
+            \\addplot[blue!50,fill opacity=0.2] fill between[of=A and E];
+            \\end{axis}
+        \\end{tikzpicture}
+        """ % (
+            key, q50_coords, q10_coords, q25_coords, q75_coords, q90_coords
+        )
+
+
+def gen_tex_single(agg_runs, agg_keys):
     gen = """\\documentclass{standalone}
         \\usepackage{tikz,pgfplots}
 
         \\pgfplotsset{compat=1.10}
-        \\usepgfplotslibrary{fillbetween}
+
+        \\usepgfplotslibrary{fillbetween,external}
+        \\tikzexternalize
 
         \\begin{document}
         """
     for key in agg_runs:
         data = agg_keys[key]
-        data_q50 = smooth(np.percentile(data, 50, axis=0), 20)[10:-9]
-        data_q10 = smooth(np.percentile(data, 10, axis=0), 20)[10:-9]
-        data_q25 = smooth(np.percentile(data, 25, axis=0), 20)[10:-9]
-        data_q75 = smooth(np.percentile(data, 75, axis=0), 20)[10:-9]
-        data_q90 = smooth(np.percentile(data, 90, axis=0), 20)[10:-9]
-        q50_coords = ""
-        q10_coords = ""
-        q25_coords = ""
-        q75_coords = ""
-        q90_coords = ""
-        for i, (q50, q10, q25, q75, q90) in enumerate(
-                zip(data_q50, data_q10, data_q25, data_q75, data_q90)):
-            q50_coords += str((i, q50))
-            q10_coords += str((i, q10))
-            q25_coords += str((i, q25))
-            q75_coords += str((i, q75))
-            q90_coords += str((i, q90))
+        gen += gen_tex_single_key(data, key)
+    gen += "\\end{document}"
+    return gen
 
-        gen += """
-            \\begin{tikzpicture}
-                \\begin{axis}[
-                    thick,smooth,no markers,
-                    grid=both,
-                    grid style={line width=.1pt, draw=gray!10},
-                    xlabel={Steps},
-                    ylabel={%s}]
-                ]
-                \\addplot+[name path=A,black,line width=1pt] coordinates {%s};
-                \\addplot+[name path=B,black,line width=.1pt] coordinates {%s};
-                \\addplot+[name path=C,black,line width=.1pt] coordinates {%s};
-                \\addplot+[name path=D,black,line width=.1pt] coordinates {%s};
-                \\addplot+[name path=E,black,line width=.1pt] coordinates {%s};
 
-                \\addplot[blue!50,fill opacity=0.2] fill between[of=A and B];
-                \\addplot[blue!50,fill opacity=0.2] fill between[of=A and C];
-                \\addplot[blue!50,fill opacity=0.2] fill between[of=A and D];
-                \\addplot[blue!50,fill opacity=0.2] fill between[of=A and E];
-                \\end{axis}
-            \\end{tikzpicture}
-            """ % (
-                key, q50_coords, q10_coords, q25_coords, q75_coords, q90_coords
-            )
+def gen_tex_multiple(agg_runs, agg_keys):
+    gen = """\\documentclass{standalone}
+        \\usepackage{tikz,pgfplots}
+
+        \\pgfplotsset{compat=1.10}
+
+        \\usepgfplotslibrary{fillbetween,external}
+        \\tikzexternalize
+
+        \\begin{document}
+        """
+    data = {}
+    for key in agg_runs:
+        data = agg_keys[key]
+        gen += gen_tex_single(data, key)
     gen += "\\end{document}"
     return gen
 
@@ -124,12 +157,41 @@ def run():
             print('Example path: ', path)
             return
 
-    path = sys.argv[1]
-    print('Loading', path)
-    agg_runs, agg_keys = aggregate(path)
-    gen = gen_tex(agg_runs, agg_keys)
-    with open('testingtex/a.tex', 'w+') as f:
-        f.write(gen)
+    if len(sys.argv) == 2:
+        path = sys.argv[1]
+        print('Loading', path)
+        agg_runs, agg_keys = aggregate(path)
+        gen = gen_tex_single(agg_runs, agg_keys)
+        with open('testingtex/a.tex', 'w+') as f:
+            f.write(gen)
+        # In case I want to automate pdflatex too.
+        # os.system('cd testingtex && pdflatex --shell-escape a.tex && cd ..')
+
+    if len(sys.argv) > 2:
+        data = {}
+        for path in sys.argv[1:]:
+            print('Loading', path)
+            agg_runs, agg_keys = aggregate(path)
+            for key in agg_runs:
+                if key not in data:
+                    data[key] = agg_keys[key]
+                else:
+                    xlen = max(data[key].shape[1], agg_keys[key].shape[1])
+
+                    X = data[key]
+                    Y = agg_keys[key]
+                    if xlen > X.shape[1]:
+                        X = np.pad(X, ((0, 0), (0, xlen - X.shape[1])), mode='edge')
+                    if xlen > Y.shape[1]:
+                        Y = np.pad(Y, ((0, 0), (0, xlen - Y.shape[1])), mode='edge')
+
+                    # print(data[key].shape, agg_keys[key].shape)
+                    # print(X.shape, Y.shape)
+                    data[key] = np.concatenate((X, Y))
+        print('total', data[next(iter(agg_runs.keys()))].shape)
+        gen = gen_tex_single(agg_runs, data)
+        with open('testingtex/a.tex', 'w+') as f:
+            f.write(gen)
 
 
 if __name__ == '__main__':
