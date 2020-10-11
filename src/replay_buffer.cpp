@@ -153,3 +153,35 @@ ReplayBuffer::get_top() {
   }
   return ret;
 }
+
+std::vector<std::shared_ptr<Game>>
+ReplayBuffer::get_top_p(float percentile) {
+  std::vector<double> rewards = get_rewards();
+  std::vector<int> indices;
+  std::vector<double> rewards_filtered;
+
+  for (int i = 0; i < (int) buffer.size(); ++i) {
+    if (buffer[i]->is_greedy) {
+      rewards_filtered.push_back(rewards[i]);
+      indices.push_back(i);
+    }
+  }
+
+  bool no_greedy_found = indices.size() == 0;
+
+  if (no_greedy_found)
+    return {};
+
+  // Sort rewards descending and apply permutation to indices.
+  auto p = sort_permutation(rewards_filtered, [](double a, double b){ return a > b; });
+  indices = apply_permutation(indices, p);
+
+  int idx = (int) (indices.size() * percentile);
+
+  // Extract top greedy games
+  std::vector<std::shared_ptr<Game>> ret;
+  for (int i = 0; i < idx; ++i) {
+    ret.push_back(buffer[indices[i]]);
+  }
+  return ret;
+}

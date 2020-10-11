@@ -30,5 +30,6 @@ class ReplayBuffer {
     std::shared_ptr<Game> sample();
     std::shared_ptr<Game> get_best();
     std::vector<std::shared_ptr<Game>> get_top();
+    std::vector<std::shared_ptr<Game>> get_top_p(float percentile);
 };
 #endif
