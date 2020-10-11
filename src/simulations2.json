@@ -6229,28 +6229,6 @@
         "n_actors": 40,
         "alpha": 0.000005
     },
-    "rip53_2": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "horizon": 100,
-
-        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
-        "eps_greedy_epsilon_decay_factor_train": 0.9998,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "n_actors": 50,
-        "alpha": 0.000005
-    },
     "rip54": {
         "base": "rip1",
         "n_warmup": 50,
@@ -6316,75 +6294,6 @@
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9997,
         "train_steps": 60,
         "alpha": 0.000009
-    },
-    "rip56_2": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "horizon": 100,
-
-        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9997,
-        "train_steps": 60,
-        "alpha": 0.000009,
-
-        "eps_greedy_epsilon_decay_factor_train": 0.9999
-    },
-    "rip56_3": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "horizon": 100,
-
-        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9997,
-        "train_steps": 60,
-
-        "alpha": 0.000008,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985
-    },
-    "rip56_4": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "horizon": 100,
-
-        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9997,
-        "train_steps": 60,
-
-        "n_actors": 35,
-        "alpha": 0.000008,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985
     },
     "rip57": {
         "base": "rip1",
@@ -6523,217 +6432,309 @@
         "experimental_follow_eps_power2": 2.0,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
 
-        "episodes": 2500,
+        "episodes": 2000,
         "n_actors": 20,
         "train_steps": 40
     },
-    "rip61": {
+    "GT5": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
-        "horizon": 100,
 
         "eps_greedy_epsilon_decay_factor_actor": 0.9992,
-        "alpha": 0.00001,
+        "eps_greedy_epsilon_decay_factor_train": 0.9998,
         "train_steps": 50,
-        "simulations": 550,
         "grad_bandit_alpha": 0.002,
 
         "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
 
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.996,
+        "use_weight_decay": true,
+        "weight_decay": 0.00001,
+        "experimental_follow_after_ep": 100,
+        "experimental_follow_after_ep2": 1400,
 
-        "eps_greedy_epsilon_decay_factor_train": 0.9999
+        "alpha": 0.0001,
+        "simulations": 2500,
+        "bandit_type": "grad_tree",
+
+        "horizon": 200
     },
-    "rip62": {
+    "GT6": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
-        "horizon": 100,
 
         "eps_greedy_epsilon_decay_factor_actor": 0.9992,
-        "alpha": 0.00001,
+        "eps_greedy_epsilon_decay_factor_train": 0.9998,
         "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
 
         "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
 
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.996,
+        "use_weight_decay": true,
+        "weight_decay": 0.00001,
+        "experimental_follow_after_ep": 100,
+        "experimental_follow_after_ep2": 1400,
 
-        "eps_greedy_epsilon_decay_factor_train": 0.99995
+        "simulations": 2500,
+        "bandit_type": "grad_tree",
+
+        "alpha": 0.00001,
+        "grad_bandit_alpha": 0.01,
+        "horizon": 200
     },
-    "a61_1": {
+    "GT7": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+
+        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
+        "eps_greedy_epsilon_decay_factor_train": 0.9998,
+        "train_steps": 50,
+
+        "experimental_top_fill": true,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_eps_power2": 2.0,
+
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.996,
+        "use_weight_decay": true,
+        "weight_decay": 0.00001,
+        "experimental_follow_after_ep": 100,
+        "experimental_follow_after_ep2": 1400,
+
+        "simulations": 2500,
+        "bandit_type": "grad_tree",
+
+        "alpha": 0.00002,
+        "grad_bandit_alpha": 0.05,
+        "horizon": 200
+    },
+    "a61": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "horizon": 100,
+
         "train_steps": 50,
         "simulations": 550,
         "grad_bandit_alpha": 0.002,
+
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
+
         "alpha": 0.000009,
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
+
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996
     },
-    "a61_2": {
+    "a62": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "horizon": 100,
-        "train_steps": 50,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
 
-        "simulations": 1000,
-        "grad_bandit_alpha": 0.002
-    },
-    "a61_3": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "horizon": 100,
-        "train_steps": 50,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "simulations": 1000,
-        "grad_bandit_alpha": 0.0005
-    },
-    "a61_4": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "horizon": 100,
-        "train_steps": 50,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "simulations": 200,
-        "grad_bandit_alpha": 0.002
-    },
-    "a61_5": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "horizon": 100,
-        "train_steps": 50,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "simulations": 200,
-        "grad_bandit_alpha": 0.01
-    },
-    "a61_6": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "horizon": 100,
         "train_steps": 50,
         "simulations": 550,
         "grad_bandit_alpha": 0.002,
+
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
+
         "alpha": 0.000009,
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "eps_greedy_epsilon_decay_factor_train": 0.9999,
 
-        "schedule_alpha": true
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996
     },
-    "a61_7": {
+    "a63": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "horizon": 100,
+
         "train_steps": 50,
         "simulations": 550,
-        "grad_bandit_alpha": 0.002,
+
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
+
         "alpha": 0.000009,
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
+
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
 
-        "schedule_alpha": true,
-        "scheduler_factor": 0.999
+        "grad_bandit_alpha": 0.001
     },
-    "a61_8": {
+    "a64": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
+        "horizon": 100,
+
         "train_steps": 50,
         "simulations": 550,
-        "grad_bandit_alpha": 0.002,
+
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
+
         "alpha": 0.000009,
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
+
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
 
-        "horizon": 30
+        "grad_bandit_alpha": 0.003
+    },
+    "GT8": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+
+        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
+        "eps_greedy_epsilon_decay_factor_train": 0.9998,
+        "train_steps": 50,
+
+        "experimental_top_fill": true,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_eps_power2": 2.0,
+
+        "use_weight_decay": true,
+        "weight_decay": 0.00001,
+        "experimental_follow_after_ep": 100,
+        "experimental_follow_after_ep2": 1400,
+
+        "simulations": 2500,
+        "bandit_type": "grad_tree",
+
+        "alpha": 0.00001,
+        "grad_bandit_alpha": 0.01,
+        "horizon": 200,
+
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.96
+    },
+    "a65": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "horizon": 100,
+
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+
+        "eps_greedy_epsilon_decay_factor_actor": 0.9992,
+        "n_actors": 40
+    },
+    "a66": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "horizon": 100,
+
+        "train_steps": 50,
+        "simulations": 550,
+
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+
+        "n_actors": 35,
+        "grad_bandit_alpha": 0.0019,
+        "alpha": 0.000007,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.99955
+    },
+    "a67": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "horizon": 100,
+
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+
+        "experimental_use_top_percentile": true
+    },
+    "a68": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "horizon": 100,
+
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+
+        "experimental_use_top_percentile": true,
+        "experimental_top_percentile": 0.003
     },
     "a61_9": {
         "base": "rip1",
@@ -6752,35 +6753,13 @@
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
         "horizon": 50
     },
-    "a61_10": {
+    "a61_9_1": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "horizon": 200
-    },
-    "a61_11": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "horizon": 100,
         "train_steps": 50,
         "simulations": 550,
         "grad_bandit_alpha": 0.002,
@@ -6792,15 +6771,15 @@
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 50,
 
-        "alpha": 0.000001
+        "alpha": 0.000005
     },
-    "a61_12": {
+    "a61_9_2": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
-        "horizon": 100,
         "train_steps": 50,
         "simulations": 550,
         "grad_bandit_alpha": 0.002,
@@ -6812,30 +6791,91 @@
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 50,
 
-        "alpha": 0.0001
+        "alpha": 0.00005
     },
-    "a61_13": {
+    "a61_9_3": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 50,
         "alpha": 0.000009,
+        
+        "simulations": 550,
+        "grad_bandit_alpha": 0.01
+    },
+    "a61_9_4": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "horizon": 20
+        "horizon": 50,
+        "alpha": 0.000009,
+        
+        "simulations": 550,
+        "grad_bandit_alpha": 0.001
     },
-    "b1": {
+    "a61_9_5": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 50,
+        "alpha": 0.000009,
+        
+        "simulations": 900,
+        "grad_bandit_alpha": 0.002
+    },
+    "a61_9_6": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 50,
+        "alpha": 0.000009,
+        
+        "simulations": 300,
+        "grad_bandit_alpha": 0.002
+    },
+    "a61_9_7": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
@@ -6849,137 +6889,12 @@
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
         "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "horizon": 30,
-
-        "eps_greedy_epsilon_decay_factor_train": 0.99991
-    },
-    "b3": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "horizon": 30,
-
-        "train_steps": 60,
-        "eps_greedy_epsilon_decay_factor_train": 0.99992
-    },
-    "b4": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "horizon": 30,
-
-        "eps_greedy_epsilon_decay_factor_train": 0.99995,
-        "experimental_use_train_schedule": true
-    },
-    "b5": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "horizon": 30,
-
-        "alpha": 0.00002,
-        "eps_greedy_epsilon_decay_factor_train": 0.99995,
-        "experimental_use_train_schedule": true
-    },
-    "b6": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "horizon": 30,
-
-        "eps_greedy_epsilon_decay_factor_actor": 1.0,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9997,
-        "eps_greedy_epsilon_decay_factor_train": 0.99995
-    },
-    "b7": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "horizon": 20,
-        "alpha": 0.00002,
-        "eps_greedy_epsilon_decay_factor_train": 0.99995,
-        "experimental_use_train_schedule": true
-    },
-    "a61_8_7": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "horizon": 30,
+        "horizon": 50,
         "eps_greedy_epsilon_decay_factor_actor": 1.0,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996
     },
-    "b8": {
+    "a61_9_8": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
@@ -6993,13 +6908,50 @@
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
         "alpha": 0.000009,
-        "horizon": 30,
-
-        "eps_greedy_epsilon_decay_factor_actor": 1.0,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9992,
-        "eps_greedy_epsilon_decay_factor_train": 0.99994
+        "horizon": 50,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 1.0,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996
     },
-    "b9": {
+    "a61_9_9": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "horizon": 50,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 1.0
+    },
+    "a61_9_10": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "horizon": 50,
+        "eps_greedy_epsilon_decay_factor_actor": 1.0,
+        "eps_greedy_epsilon_decay_factor_train": 1.0,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 1.0
+    },
+    "a61_8": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
@@ -7014,172 +6966,8 @@
         "experimental_follow_eps_power2": 2.0,
         "alpha": 0.000009,
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "horizon": 30,
-
-        "eps_greedy_epsilon_decay_factor_actor": 1.0,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9999,
-        "eps_greedy_epsilon_decay_factor_train": 0.99996
-    },
-    "b10": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "horizon": 25
-    },
-    "b11": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
-        "simulations": 750,
-        "horizon": 30
-    },
-    "b12": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "grad_bandit_alpha": 0.001,
-        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
-        "simulations": 850,
-        "horizon": 30
-    },
-    "b13": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "eps_greedy_epsilon_decay_factor_actor": 1.0,
-        "simulations": 450,
-        "horizon": 30
-    },
-    "b13_1": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
-        "simulations": 450,
-        "horizon": 30
-    },
-    "b14": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "alpha": 0.000005,
-        "eps_greedy_epsilon_decay_factor_actor": 1.0,
-        "horizon": 30
-    },
-    "a61_8_epsactor": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "simulations": 550,
-        "grad_bandit_alpha": 0.002,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "eps_greedy_epsilon_decay_factor_actor": 1.0,
-        "horizon": 30
-    },
-    "b15": {
-        "base": "rip1",
-        "n_warmup": 50,
-        "net_architecture": [12, 6],
-        "n_actors": 30,
-        "train_steps": 50,
-        "experimental_top_fill": true,
-        "experimental_follow_after_ep": 900,
-        "experimental_follow_eps_power": 2.0,
-        "experimental_follow_after_ep2": 1100,
-        "experimental_follow_eps_power2": 2.0,
-        "alpha": 0.000009,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-
-        "grad_bandit_alpha": 0.001,
-        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
-        "simulations": 1100,
         "horizon": 30
     },
     "a61_8_1": {
@@ -7238,6 +7026,7 @@
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
         "horizon": 30,
         "alpha": 0.000009,
+        
         "simulations": 550,
         "grad_bandit_alpha": 0.01
     },
@@ -7257,6 +7046,7 @@
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
         "horizon": 30,
         "alpha": 0.000009,
+        
         "simulations": 550,
         "grad_bandit_alpha": 0.001
     },
@@ -7276,6 +7066,7 @@
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
         "horizon": 30,
         "alpha": 0.000009,
+        
         "simulations": 900,
         "grad_bandit_alpha": 0.002
     },
@@ -7295,90 +7086,263 @@
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
         "horizon": 30,
         "alpha": 0.000009,
+        
         "simulations": 300,
         "grad_bandit_alpha": 0.002
     },
-    "c1": {
+    "a61_8_7": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "alpha": 0.000009,
         "horizon": 30,
-        "simulations": 900,
-        "grad_bandit_alpha": 0.002,
-
-        "alpha": 0.000002
+        "eps_greedy_epsilon_decay_factor_actor": 1.0,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996
     },
-    "c2": {
+    "a61_8_8": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "alpha": 0.000009,
         "horizon": 30,
-        "simulations": 900,
-        "grad_bandit_alpha": 0.002,
-
-        "alpha": 0.000005
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 1.0,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996
     },
-    "c3": {
+    "a61_8_9": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "horizon": 30,
         "eps_greedy_epsilon_decay_factor_actor": 0.99925,
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
-        "horizon": 30,
-        "simulations": 900,
-        "grad_bandit_alpha": 0.002,
-
-        "alpha": 0.00002
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 1.0
     },
-    "c4": {
+    "a61_8_10": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
         "n_actors": 30,
         "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
         "experimental_top_fill": true,
         "experimental_follow_after_ep": 900,
         "experimental_follow_eps_power": 2.0,
         "experimental_follow_after_ep2": 1100,
         "experimental_follow_eps_power2": 2.0,
-        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
-        "eps_greedy_epsilon_decay_factor_train": 0.99985,
-        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "alpha": 0.000009,
         "horizon": 30,
-        "simulations": 900,
-        "grad_bandit_alpha": 0.002,
-
-        "alpha": 0.00005
+        "eps_greedy_epsilon_decay_factor_actor": 1.0,
+        "eps_greedy_epsilon_decay_factor_train": 1.0,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 1.0
     },
-    "c5": {
+    "b1": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 30,
+
+        "eps_greedy_epsilon_decay_factor_train": 0.99991
+    },
+    "b2": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 30,
+
+        "experimental_use_one_top": true,
+        "eps_greedy_epsilon_decay_factor_train": 1.0
+    },
+    "b4": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 30,
+
+        "eps_greedy_epsilon_decay_factor_train": 0.99995
+    },
+    "b5": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 30,
+
+        "alpha": 0.00002,
+        "eps_greedy_epsilon_decay_factor_train": 0.99995
+    },
+    "b0": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "simulations": 550,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 30
+    },
+    "b11": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "simulations": 750,
+        "horizon": 30
+    },
+    "b12": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "grad_bandit_alpha": 0.001,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "simulations": 850,
+        "horizon": 30
+    },
+    "b13_1": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "grad_bandit_alpha": 0.002,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "simulations": 450,
+        "horizon": 30
+    },
+    "b15": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "alpha": 0.000009,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "grad_bandit_alpha": 0.001,
+        "eps_greedy_epsilon_decay_factor_actor": 0.9995,
+        "simulations": 1100,
+        "horizon": 30
+    },
+    "b16": {
         "base": "rip1",
         "n_warmup": 50,
         "net_architecture": [12, 6],
@@ -7393,9 +7357,49 @@
         "eps_greedy_epsilon_decay_factor_train": 0.99985,
         "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
         "horizon": 30,
-        "simulations": 900,
-        "grad_bandit_alpha": 0.002,
-
-        "alpha": 0.0001
+        "alpha": 0.000009,
+        
+        "simulations": 1100,
+        "grad_bandit_alpha": 0.002
+    },
+    "b17": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 30,
+        "alpha": 0.000009,
+        
+        "simulations": 1500,
+        "grad_bandit_alpha": 0.002
+    },
+    "b18": {
+        "base": "rip1",
+        "n_warmup": 50,
+        "net_architecture": [12, 6],
+        "n_actors": 30,
+        "train_steps": 50,
+        "experimental_top_fill": true,
+        "experimental_follow_after_ep": 900,
+        "experimental_follow_eps_power": 2.0,
+        "experimental_follow_after_ep2": 1100,
+        "experimental_follow_eps_power2": 2.0,
+        "eps_greedy_epsilon_decay_factor_actor": 0.99925,
+        "eps_greedy_epsilon_decay_factor_train": 0.99985,
+        "eps_greedy_epsilon_decay_factor_follow_a2c": 0.9996,
+        "horizon": 30,
+        "alpha": 0.000009,
+        
+        "simulations": 1100,
+        "grad_bandit_alpha": 0.005
     }
 }
