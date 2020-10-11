@@ -276,12 +276,32 @@ std::pair<int, double> episode(
   std::mt19937 generator(rd());
   std::uniform_real_distribution<> epsgreedy_distribution(0, 1);
 
+  bool experimental_use_top_percentile = params["experimental_use_top_percentile"];
+  float experimental_top_percentile = params["experimental_top_percentile"];
+
   bool debug_do_print = false;
   bool use_eps_greedy_learning = params["use_eps_greedy_learning"];
   float eps_greedy_epsilon_decay_factor = params["eps_greedy_epsilon_decay_factor_train"];
 
   float epsilon = std::pow(eps_greedy_epsilon_decay_factor, n_episode);
   std::cout << "train epsilon " << epsilon << std::endl;
+
+  bool experimental_use_train_schedule = params["experimental_use_train_schedule"];
+
+  // Sep25 18:30 Added
+  // Sep25 19:05 Commented out
+  // Sep26 08:10 Enabled again
+  // Sep26 22:00 Disabled
+  // Sep27 06:57 Enabled
+  if (experimental_use_train_schedule) {
+    if (n_episode > 300)
+      train_steps = 100;
+    if (n_episode > 400)
+      train_steps = 200;
+    if (n_episode > 800)
+      train_steps = 500;
+  }
+
 
   // TRAINING.
   a2c_agent.policy_net->train();
@@ -298,7 +318,12 @@ std::pair<int, double> episode(
     if (greedy) {
       // When greedy, train with top games.
       std::cout << "TOP: ";
-      auto games = replay_buffer->get_top();
+      std::vector<std::shared_ptr<Game>> games;
+      if (experimental_use_top_percentile) {
+        games = replay_buffer->get_top_p(experimental_top_percentile);
+      } else {
+        games = replay_buffer->get_top();
+      }
       for (auto game : games) {
         auto loss = a2c_agent.update(game, n_episode, debug_print);
         debug_print = false;

@@ -255,7 +255,7 @@ json get_default(std::string base) {
     {"rip1", {
       {"n_actions", 3},
       {"n_input_features", 4},
-      {"n_runs", 5},
+      {"n_runs", 10},
 
       // MCTS
       {"gamma", .99},
@@ -314,6 +314,82 @@ json get_default(std::string base) {
       {"experimental_follow_after_ep2", 900},
       {"experimental_follow_eps_power2", 2},
       {"experimental_top_cutoff", 195},
+
+      {"experimental_use_top_percentile", false},
+      {"experimental_top_percentile", 0.001},
+
+      {"experimental_use_train_schedule", false},
+
+      // Other
+      {"reward_exponent", 1},
+    }},
+    {"d0", {
+      {"n_actions", 3},
+      {"n_input_features", 2},
+      {"n_runs", 10},
+
+      // MCTS
+      {"gamma", .99},
+      {"simulations", 900},
+      {"horizon", 30},
+      {"dirichlet_alpha", .3},
+      {"dirichlet_frac", .1},
+      {"pb_c_base", 19000},
+      {"pb_c_init", .3},
+      {"tough_ce", false},
+
+      // A2C
+      {"alpha", .000009},
+      {"net_architecture", {12, 6}},
+      {"schedule_alpha", false},
+      {"scheduler_class", "exp"},  // exp, step, reduce_eval
+      {"scheduler_factor", .995},  // For: exp, step, reduce_eval
+      {"scheduler_min_lr", .000001},  // For: exp, step, reduce_eval
+      {"scheduler_steps", {100, 200}},  // For: step
+      {"scheduler_min_good_eval", -120.0},  // For: reduce_eval
+      {"scheduler_min_n_good_evals", 20}, // For: reduce_eval
+      {"scheduler_consecutive", true},  // For: reduce_eval
+      {"use_weight_decay", false},
+      {"weight_decay", .00001},
+      {"optimizer_class", "adam"},  // adam, sgd
+      {"sgd_momentum", .9},
+
+      // AlphaZero
+      {"memory_capacity", 100000},
+      {"prioritized_sampling", false},
+      {"episodes", 1500},
+      {"n_procs", 8},
+      {"n_actors", 30},  // 5000
+      {"train_steps", 50},  // 700000
+      {"desired_eval_len", 0},
+      {"n_desired_eval_len", 100},
+      {"bandit_type", "grad"},  // mcts, grad
+      {"grad_bandit_alpha", 0.02},
+      {"use_eps_greedy_learning", true},
+      {"eps_greedy_epsilon_decay_factor_train", 0.99985},
+      {"eps_greedy_epsilon_decay_factor_actor", 0.99925},
+      {"eps_greedy_epsilon_decay_factor_follow_a2c", 0.9996},
+      {"grad_bandit_init_random", true},
+      {"grad_bandit_reward_power", 1},
+      {"grad_bandit_tau_schedule_tau", {20, 90, 80}},
+      {"grad_bandit_tau_schedule_k", {0, 1500, 2000}},
+      {"do_warmup", true},
+      {"n_warmup", 50},
+      {"follow_a2c", true},
+      {"eval_break_on_good_avg_reward", true},
+      {"eval_min_avg_reward", 195},
+
+      {"experimental_top_fill", true},
+      {"experimental_follow_after_ep", 900},
+      {"experimental_follow_eps_power", 2.0},
+      {"experimental_follow_after_ep2", 1100},
+      {"experimental_follow_eps_power2", 2.0},
+      {"experimental_top_cutoff", 195},
+
+      {"experimental_use_top_percentile", false},
+      {"experimental_top_percentile", 0.001},
+
+      {"experimental_use_train_schedule", false},
 
       // Other
       {"reward_exponent", 1},
