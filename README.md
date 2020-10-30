@@ -22,4 +22,4 @@ combination with SGBS.
 
 ### Installation
 
-Information will follow.
+Run `./setup.sh`. The `src` folder will contain a new binary `GRAB0`. You can adjust experiments in `simulations.json`.

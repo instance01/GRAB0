@@ -15,11 +15,14 @@ ExternalProject_Add(tensorboard_logger
 )
 
 
+message("${CMAKE_SOURCE_DIR}/dist/libtorch")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/dist/libtorch")
+
 
 find_package(Protobuf REQUIRED)
 find_package(Torch REQUIRED)
-find_package(nlohmann_json REQUIRED)
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(dist/json)
 
 include_directories("dist/src/tensorboard_logger/include")
 link_directories("dist/src/tensorboard_logger/")
