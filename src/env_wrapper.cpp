@@ -5,6 +5,7 @@
 #include "envs/mountain_car.hpp"
 #include "envs/gridworld.hpp"
 #include "envs/cartpole.hpp"
+#include "envs/lunar_lander.hpp"
 
 
 // TODO This should be templates at some point.
@@ -20,6 +21,8 @@ EnvWrapper::init(std::string game, json params) {
     env = std::make_shared<MtCarEnv>(0.);
   } else if (game == "cart") {
     env = std::make_shared<CartPoleEnv>();
+  } else if (game == "lunar") {
+    env = std::make_shared<LunarLanderEnv>(true);
   } else {
     std::set<std::pair<int, int>> blocks;
     int width = 3;
@@ -37,6 +40,15 @@ EnvWrapper::init(std::string game, json params) {
     }
     env = std::make_shared<GridWorldEnv>(width, width, blocks);
   }
+}
+
+std::tuple<std::vector<float>, double, bool>
+EnvWrapper::step(std::vector<float> action) {
+  std::tuple<std::vector<float>, double, bool> ret = env->step(action);
+  double& reward = std::get<1>(ret);
+  if (reward != 0 && params["prioritized_sampling"])
+    reward = std::pow(reward, reward_exponent);
+  return ret;
 }
 
 std::tuple<std::vector<float>, double, bool>
@@ -66,6 +78,9 @@ EnvWrapper::clone() {
   } else if (game == "cart") {
     auto cart_env = std::static_pointer_cast<CartPoleEnv>(env);
     env_->env = std::make_shared<CartPoleEnv>(*cart_env);
+  } else if (game == "lunar") {
+    auto lunar_env = std::static_pointer_cast<LunarLanderEnv>(env);
+    env_->env = std::make_shared<LunarLanderEnv>(*lunar_env);
   } else {
     auto grid_env = std::static_pointer_cast<GridWorldEnv>(env);
     env_->env = std::make_shared<GridWorldEnv>(*grid_env);
