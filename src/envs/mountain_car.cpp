@@ -27,7 +27,7 @@ MtCarEnv::MtCarEnv(float goal_velocity) : goal_velocity(goal_velocity) {
 }
 
 std::vector<float>
-MtCarEnv::reset(std::mt19937 generator) {
+MtCarEnv::reset(std::mt19937 &generator) {
   steps = 0;
   std::uniform_real_distribution<float> distribution(-.6, -.4);
   state = {

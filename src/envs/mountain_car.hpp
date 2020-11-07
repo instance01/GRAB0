@@ -32,7 +32,7 @@ class MtCarEnv : public Env {
     MtCarEnv(float goal_velocity);
     ~MtCarEnv() {};
 
-    std::vector<float> reset(std::mt19937 generator);
+    std::vector<float> reset(std::mt19937 &generator);
     std::tuple<std::vector<float>, double, bool> step(int action);
 };
 #endif

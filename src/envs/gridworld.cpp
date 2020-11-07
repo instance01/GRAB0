@@ -68,7 +68,7 @@ GridWorldEnv::move(int action) {
 }
 
 std::vector<float>
-GridWorldEnv::reset(std::mt19937 generator) {
+GridWorldEnv::reset(std::mt19937 &generator) {
   start = std::make_pair(1, 1);
   goal = std::make_pair(width - 2, height - 2);
   dir = 0;

@@ -62,7 +62,7 @@ CartPoleEnv::step(int action) {
 }
 
 std::vector<float>
-CartPoleEnv::reset(std::mt19937 generator) {
+CartPoleEnv::reset(std::mt19937 &generator) {
   steps = 0;
   std::uniform_real_distribution<float> distribution(-.05, .05);
   state = {
