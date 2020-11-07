@@ -18,11 +18,17 @@ ExternalProject_Add(tensorboard_logger
 message("${CMAKE_SOURCE_DIR}/dist/libtorch")
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/dist/libtorch")
 
+message("${CMAKE_SOURCE_DIR}/dist/box2d/build/src")
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/dist/box2d/build/src")
+
+find_package(box2d REQUIRED)
 
 find_package(Protobuf REQUIRED)
 find_package(Torch REQUIRED)
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 add_subdirectory(dist/json)
+
+include_directories("dist/box2d/include")
 
 include_directories("dist/src/tensorboard_logger/include")
 link_directories("dist/src/tensorboard_logger/")
@@ -33,7 +39,8 @@ add_definitions("-lstdc++fs")
 set(CMAKE_BUILD_TYPE Debug)
 #set(CMAKE_BUILD_TYPE Release)
 
-add_executable(${PROJECT_NAME} alphazero.cpp a2c.cpp replay_buffer.cpp env_wrapper.cpp mcts.cpp tensorboard_util.cpp simple_thread_pool.cpp envs/gridworld.cpp envs/mountain_car.cpp envs/env.cpp cfg.cpp util.hpp lr_scheduler.cpp envs/cartpole.cpp gradient_bandit.cpp fuzz_bandit.cpp registry.cpp gradient_bandit_tree.cpp)
+add_executable(${PROJECT_NAME} alphazero.cpp a2c.cpp replay_buffer.cpp env_wrapper.cpp mcts.cpp tensorboard_util.cpp simple_thread_pool.cpp envs/gridworld.cpp envs/mountain_car.cpp envs/env.cpp cfg.cpp util.hpp lr_scheduler.cpp envs/cartpole.cpp gradient_bandit.cpp fuzz_bandit.cpp registry.cpp gradient_bandit_tree.cpp envs/lunar_lander.cpp gaussian_a2c.cpp gaussian_util.cpp gaussian_gradient_bandit.cpp)
+target_link_libraries(${PROJECT_NAME} "${CMAKE_SOURCE_DIR}/dist/box2d/build/bin/libbox2d.a")
 target_link_libraries(${PROJECT_NAME} "${TORCH_LIBRARIES}")
 target_link_libraries(${PROJECT_NAME} "stdc++fs")
 target_link_libraries(${PROJECT_NAME} "-ltensorboard_logger")
