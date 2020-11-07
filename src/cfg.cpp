@@ -11,6 +11,7 @@ json get_default(std::string base) {
       {"n_actions", 3},
       {"n_input_features", 3},
       {"n_runs", 10},
+      {"continuous", false},
 
       // MCTS
       {"gamma", .99},
@@ -79,6 +80,7 @@ json get_default(std::string base) {
       {"n_actions", 3},
       {"n_input_features", 2},
       {"n_runs", 10},
+      {"continuous", false},
 
       // MCTS
       {"gamma", .99},
@@ -138,6 +140,7 @@ json get_default(std::string base) {
       {"n_actions", 3},
       {"n_input_features", 2},
       {"n_runs", 10},
+      {"continuous", false},
 
       // MCTS
       {"gamma", .99},
@@ -197,6 +200,7 @@ json get_default(std::string base) {
       {"n_actions", 3},
       {"n_input_features", 3},
       {"n_runs", 10},
+      {"continuous", false},
 
       // MCTS
       {"gamma", .99},
@@ -256,6 +260,7 @@ json get_default(std::string base) {
       {"n_actions", 3},
       {"n_input_features", 4},
       {"n_runs", 10},
+      {"continuous", false},
 
       // MCTS
       {"gamma", .99},
@@ -327,6 +332,7 @@ json get_default(std::string base) {
       {"n_actions", 3},
       {"n_input_features", 2},
       {"n_runs", 10},
+      {"continuous", false},
 
       // MCTS
       {"gamma", .99},
@@ -384,7 +390,7 @@ json get_default(std::string base) {
       {"experimental_follow_eps_power", 2.0},
       {"experimental_follow_after_ep2", 1100},
       {"experimental_follow_eps_power2", 2.0},
-      {"experimental_top_cutoff", 195},
+      {"experimental_top_cutoff", -198},
 
       {"experimental_use_top_percentile", false},
       {"experimental_top_percentile", 0.001},
