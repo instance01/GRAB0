@@ -50,10 +50,10 @@ class A2CLearner {
     A2CLearner(json params, EnvWrapper &env);
     ~A2CLearner() {};
 
-    torch::Tensor normalize(torch::Tensor x);
-    std::pair<torch::Tensor, torch::Tensor> predict_policy(torch::Tensor samples_);
-    std::pair<torch::Tensor, torch::Tensor> predict_policy(std::vector<std::vector<float>> states);
-    torch::Tensor _calc_normalized_rewards(std::vector<double> rewards);
-    torch::Tensor update(std::shared_ptr<Game> game, int n_episode, bool do_print);
+    virtual torch::Tensor normalize(torch::Tensor x);
+    virtual std::pair<torch::Tensor, torch::Tensor> predict_policy(torch::Tensor samples_);
+    virtual std::pair<torch::Tensor, torch::Tensor> predict_policy(std::vector<std::vector<float>> states);
+    virtual torch::Tensor _calc_normalized_rewards(std::vector<double> rewards);
+    virtual torch::Tensor update(std::shared_ptr<Game> game, int n_episode, bool do_print);
 };
 #endif
