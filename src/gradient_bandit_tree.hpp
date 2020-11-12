@@ -41,7 +41,7 @@ class GradientBanditNode {
 class GradientBanditTreeSearch : public Bandit {
   public:
     json params;
-    A2CLearner a2c_agent;
+    A2CLearner* a2c_agent;
     // shared_ptr because unique_ptr makes this class uncopyable.
     // And I don't want to define a custom copy function.
     std::shared_ptr<EnvWrapper> env;
@@ -51,7 +51,7 @@ class GradientBanditTreeSearch : public Bandit {
 
     std::unordered_map<std::shared_ptr<GradientBanditNode>, torch::Tensor> policy_net_cache;
 
-    GradientBanditTreeSearch(EnvWrapper env, A2CLearner a2c_agent, json params, std::mt19937 &generator);
+    GradientBanditTreeSearch(EnvWrapper env, A2CLearner* a2c_agent, json params, std::mt19937 &generator);
     GradientBanditTreeSearch() {};
     ~GradientBanditTreeSearch() {};
 

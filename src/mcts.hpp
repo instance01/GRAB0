@@ -37,7 +37,7 @@ class Node {
 class MCTS : public Bandit {
   public:
     json params;
-    A2CLearner a2c_agent;
+    A2CLearner* a2c_agent;
     // shared_ptr because unique_ptr makes this class uncopyable.
     // And I don't want to define a custom copy function.
     std::shared_ptr<EnvWrapper> env;
@@ -45,7 +45,7 @@ class MCTS : public Bandit {
 
     std::unordered_map<std::shared_ptr<Node>, torch::Tensor> policy_net_cache;
 
-    MCTS(EnvWrapper env, A2CLearner a2c_agent, json params);
+    MCTS(EnvWrapper env, A2CLearner* a2c_agent, json params);
     MCTS() {};
     ~MCTS() {};
 

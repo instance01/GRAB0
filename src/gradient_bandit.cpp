@@ -63,7 +63,7 @@ SingleGradientBandit::update(std::vector<double> action_probs, int action, doubl
 
 GradientBanditSearch::GradientBanditSearch(
     EnvWrapper orig_env,
-    A2CLearner a2c_agent,
+    A2CLearner* a2c_agent,
     json params,
     Registry *registry,
     std::mt19937 &generator,
@@ -94,7 +94,7 @@ GradientBanditSearch::GradientBanditSearch(
     // Evaluate current state and predict action probabilities.
     // These are used for initializing the bandit in the next step.
     torch::Tensor action_probs;
-    std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({state});
+    std::tie(action_probs, std::ignore) = a2c_agent->predict_policy({state});
     int action = action_probs.argmax().item<int>();
 
     // TODO Interesting detail: We add noise AFTER taking the argmax.. Not sure which way is better.
@@ -178,7 +178,7 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
     for (; j < (int) bandits.size(); ++j) {
       if (!bandits[j].initialized) {
         torch::Tensor action_probs;
-        std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({obs});
+        std::tie(action_probs, std::ignore) = a2c_agent->predict_policy({obs});
 
         // Add Dirichlet noise.
         std::gamma_distribution<double> distribution(alpha, 1.);
@@ -230,7 +230,7 @@ GradientBanditSearch::policy(int i, EnvWrapper orig_env, std::vector<float> stat
     double val = 0;
     if (!done) {
       torch::Tensor value;
-      std::tie(std::ignore, value) = a2c_agent.predict_policy({obs});
+      std::tie(std::ignore, value) = a2c_agent->predict_policy({obs});
       val = value.item<double>();
     }
 

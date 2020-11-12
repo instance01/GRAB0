@@ -53,12 +53,12 @@ class GradientBanditSearch : public Bandit {
     std::vector<SingleGradientBandit> bandits;
     EnvWrapper env;
 
-    A2CLearner a2c_agent;
+    A2CLearner* a2c_agent;
 
     json params;
     bool do_print;
 
-    GradientBanditSearch(EnvWrapper env, A2CLearner a2c_agent, json params, Registry *registry, std::mt19937 &generator, bool do_print, bool greedy_bandit=false);
+    GradientBanditSearch(EnvWrapper env, A2CLearner* a2c_agent, json params, Registry *registry, std::mt19937 &generator, bool do_print, bool greedy_bandit=false);
     ~GradientBanditSearch() {};
 
     void reset_policy_cache() {};

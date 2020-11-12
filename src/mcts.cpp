@@ -5,7 +5,7 @@
 #include "util.hpp"
 
 
-MCTS::MCTS(EnvWrapper env, A2CLearner a2c_agent, json params) : params(params), a2c_agent(a2c_agent) {
+MCTS::MCTS(EnvWrapper env, A2CLearner* a2c_agent, json params) : params(params), a2c_agent(a2c_agent) {
   // TODO Should use global_generator from alphazero.
   std::random_device rd;
   std::mt19937 generator(rd());
@@ -77,7 +77,7 @@ MCTS::_get_best_node(std::shared_ptr<Node> parent_node) {
   auto cached_action_probs = policy_net_cache.find(parent_node);
   torch::Tensor action_probs;
   if (cached_action_probs == policy_net_cache.end()) {
-    std::tie(action_probs, std::ignore) = a2c_agent.predict_policy(parent_node->torch_state);
+    std::tie(action_probs, std::ignore) = a2c_agent->predict_policy(parent_node->torch_state);
     policy_net_cache[parent_node] = action_probs;
   } else {
     action_probs = cached_action_probs->second;
@@ -158,7 +158,7 @@ MCTS::policy(int i, EnvWrapper env, std::vector<float> obs, bool ret_node) {
   root_node->torch_state = vec_1d_as_tensor(root_node->state, torch::kFloat32);
 
   torch::Tensor action_probs;
-  std::tie(action_probs, std::ignore) = a2c_agent.predict_policy(root_node->torch_state);
+  std::tie(action_probs, std::ignore) = a2c_agent->predict_policy(root_node->torch_state);
   double alpha = params["dirichlet_alpha"];
   double frac = params["dirichlet_frac"];
 
@@ -175,7 +175,7 @@ MCTS::policy(int i, EnvWrapper env, std::vector<float> obs, bool ret_node) {
   for (int j = 0; j < n_iter; ++j) {
     std::shared_ptr<Node> node = select_expand();
     torch::Tensor value;
-    std::tie(std::ignore, value) = a2c_agent.predict_policy(node->torch_state);
+    std::tie(std::ignore, value) = a2c_agent->predict_policy(node->torch_state);
     double q_val = value[0][0].item<double>();
     // Comment from Python: 'If gradients explode, q_val will be nan.'
     // TODO Update: Not so sure any longer whether that comment was a correct assessment.

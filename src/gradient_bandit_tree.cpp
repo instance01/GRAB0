@@ -5,7 +5,7 @@
 #include "util.hpp"
 
 
-GradientBanditTreeSearch::GradientBanditTreeSearch(EnvWrapper env, A2CLearner a2c_agent, json params, std::mt19937 &generator) : params(params), a2c_agent(a2c_agent), generator(generator) {
+GradientBanditTreeSearch::GradientBanditTreeSearch(EnvWrapper env, A2CLearner* a2c_agent, json params, std::mt19937 &generator) : params(params), a2c_agent(a2c_agent), generator(generator) {
   // std::random_device rd;
   // std::mt19937 generator(rd());
   auto obs = env.reset(generator);
@@ -114,7 +114,7 @@ GradientBanditTreeSearch::init_single_bandit(std::shared_ptr<SingleGradientBandi
   int n_actions = params["n_actions"];
 
   torch::Tensor action_probs;
-  std::tie(action_probs, std::ignore) = a2c_agent.predict_policy({obs});
+  std::tie(action_probs, std::ignore) = a2c_agent->predict_policy({obs});
 
   // Add Dirichlet noise.
   std::gamma_distribution<double> distribution(alpha, 1.);
@@ -154,7 +154,7 @@ GradientBanditTreeSearch::policy(int i, EnvWrapper env, std::vector<float> obs, 
   root_node->torch_state = vec_1d_as_tensor(root_node->state, torch::kFloat32);
 
   torch::Tensor action_probs;
-  std::tie(action_probs, std::ignore) = a2c_agent.predict_policy(root_node->torch_state);
+  std::tie(action_probs, std::ignore) = a2c_agent->predict_policy(root_node->torch_state);
   double alpha = params["dirichlet_alpha"];
   double frac = params["dirichlet_frac"];
 
@@ -169,7 +169,7 @@ GradientBanditTreeSearch::policy(int i, EnvWrapper env, std::vector<float> obs, 
   for (int j = 0; j < n_iter; ++j) {
     std::shared_ptr<GradientBanditNode> node = select_expand();
     torch::Tensor value;
-    std::tie(std::ignore, value) = a2c_agent.predict_policy(node->torch_state);
+    std::tie(std::ignore, value) = a2c_agent->predict_policy(node->torch_state);
     double q_val = value[0][0].item<double>();
     backup(node, q_val);
   }
