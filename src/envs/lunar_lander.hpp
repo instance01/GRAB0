@@ -26,6 +26,8 @@ class ContactDetector : public b2ContactListener {
 
 class LunarLanderEnv : public Env {
   public:
+    bool debug = false; // TODO
+
     float FPS = 50.0;
     float SCALE = 30.0;
     float MAIN_ENGINE_POWER = 13.0;
@@ -53,7 +55,6 @@ class LunarLanderEnv : public Env {
     bool initialized = false;
     std::mt19937 generator;
     bool continuous = true;
-    int max_steps = 1000;  // This is convenience, for faster training.
     int steps = 0;
 
     float helipad_y;
@@ -78,7 +79,7 @@ class LunarLanderEnv : public Env {
     void _create_moon();
     void _reset(std::mt19937 &generator);
     std::vector<float> reset(std::mt19937 &generator);
-    std::tuple<std::vector<float>, double, bool> step(std::vector<float> action);
+    std::tuple<std::vector<float>, double, bool> step(std::vector<float> &action);
 
     void clone_body(b2Body* current, b2Body* other);
 };

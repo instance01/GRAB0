@@ -9,6 +9,7 @@ template <typename T> int sgn(T val) {
 }
 
 LunarLanderEnv::LunarLanderEnv() {
+  max_steps = 500;
   world = new b2World(b2Vec2(0, -9.8));
   continuous = true;
 
@@ -32,10 +33,6 @@ void LunarLanderEnv::clone_body(b2Body* current, b2Body* other) {
   current->SetAngularDamping(other->GetAngularDamping());
   current->SetGravityScale(other->GetGravityScale());
   current->SetEnabled(other->IsEnabled());
-  // TODO Need massdata?
-  b2MassData* data = new b2MassData();
-  other->GetMassData(data);
-  current->SetMassData(data);
 
   auto vel = other->GetLinearVelocity();
   current->SetLinearVelocity(vel);
@@ -59,13 +56,16 @@ LunarLanderEnv::LunarLanderEnv(LunarLanderEnv &other) {
   height = other.height;
   _create_moon();
 
-  if (!other.initialized) {
-    return;
-  }
-
   max_steps = other.max_steps;
   steps = other.steps;
   generator = other.generator;
+
+  expected_stddev = other.expected_stddev;
+  expected_mean = other.expected_mean;
+
+  if (!other.initialized) {
+    return;
+  }
 
   helipad_y = other.helipad_y;
   continuous = other.continuous;
@@ -79,7 +79,9 @@ LunarLanderEnv::LunarLanderEnv(LunarLanderEnv &other) {
   clone_body(lander, other.lander);
 
   // TODO Any way to get rid of this weird hack? 2 iterations work too btw.
-  for (int i = 0; i < 3; ++i) {
+  // for (int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 10; ++i) {
+    world->Step(1.0 / FPS, 6 * 30, 2 * 30);
     world->Step(1.0 / FPS, 6 * 30, 2 * 30);
     world->Step(1.0 / FPS, 6 * 30, 2 * 30);
     world->Step(1.0 / FPS, 6 * 30, 2 * 30);
@@ -99,28 +101,25 @@ LunarLanderEnv::destroy() {
     world->DestroyBody(leg1);
     world->DestroyBody(leg2);
     world->DestroyBody(lander);
-    delete world;
     delete listener;
   }
 }
 
 LunarLanderEnv::~LunarLanderEnv() {
   destroy();
+  delete world;
 }
 
 void
 ContactDetector::BeginContact(b2Contact* contact) {
   if (env->lander == contact->GetFixtureA()->GetBody() || env->lander == contact->GetFixtureB()->GetBody()) {
     env->game_over = true;
-    //std::cout << "[C] lander" << env->lander->GetPosition().x << " " << env->lander->GetPosition().y << std::endl;
   }
   if (env->leg1 == contact->GetFixtureA()->GetBody() || env->leg1 == contact->GetFixtureB()->GetBody()) {
     env->leg1_ground_contact = true;
-    //std::cout << "[C] leg1" << std::endl;
   }
   if (env->leg2 == contact->GetFixtureA()->GetBody() || env->leg2 == contact->GetFixtureB()->GetBody()) {
     env->leg2_ground_contact = true;
-    //std::cout << "[C] leg2" << std::endl;
   }
 }
 
@@ -197,8 +196,10 @@ LunarLanderEnv::_create_moon() {
   height[CHUNKS / 2 + 1] = helipad_y;
   height[CHUNKS / 2 + 2] = helipad_y;
   std::vector<float> smooth_y;
-  for (int i = 0; i < CHUNKS; ++i)
+  smooth_y.push_back(0.33*(height[CHUNKS] + height[0] + height[1]));
+  for (int i = 1; i < CHUNKS; ++i) {
     smooth_y.push_back(0.33*(height[i-1] + height[i+0] + height[i+1]));
+  }
 
   b2EdgeShape edgeShape;
   edgeShape.SetTwoSided(b2Vec2(0, 0), b2Vec2(W, 0));
@@ -222,7 +223,9 @@ LunarLanderEnv::_create_moon() {
 
 void
 LunarLanderEnv::_reset(std::mt19937 &generator_) {
+  steps = 0;
   generator = generator_;
+  // TODO: Here's a small leak. We never delete this and also when resetting multiple times we lose the pointer.
   listener = new ContactDetector(this);
   world->SetContactListener(listener);
   game_over = false;
@@ -237,6 +240,9 @@ LunarLanderEnv::_reset(std::mt19937 &generator_) {
   std::generate(std::begin(height), std::end(height), [&]{ return uniform_distr(generator); });
 
   float initial_y = VIEWPORT_H / SCALE;
+
+  // TODO just simplyfing for debugging:
+  //initial_y = 5.0;
 
   b2BodyDef bodyDef_;
   bodyDef_.type = b2_dynamicBody;
@@ -260,17 +266,23 @@ LunarLanderEnv::_reset(std::mt19937 &generator_) {
 
 std::vector<float>
 LunarLanderEnv::reset(std::mt19937 &generator_) {
+  if (initialized) {
+    destroy();
+  }
   _reset(generator_);
   _create_moon();
 
+  // TODO just simplyfing for debugging:
+  //INITIAL_RANDOM = 100.0f;
   std::uniform_real_distribution<> uniform_distr_(-INITIAL_RANDOM, INITIAL_RANDOM);
   lander->ApplyForceToCenter(b2Vec2(uniform_distr_(generator), uniform_distr_(generator)), true);
 
   leg1 = _create_leg(0);
   leg2 = _create_leg(1);
 
+  std::vector<float> action = {0.0, 0.0};
   std::vector<float> obs;
-  std::tie(obs, std::ignore, std::ignore) = step({0.0, 0.0});
+  std::tie(obs, std::ignore, std::ignore) = step(action);
 
   initialized = true;
 
@@ -278,7 +290,7 @@ LunarLanderEnv::reset(std::mt19937 &generator_) {
 }
 
 std::tuple<std::vector<float>, double, bool>
-LunarLanderEnv::step(std::vector<float> action) {
+LunarLanderEnv::step(std::vector<float> &action) {
   steps += 1;
   if (steps > max_steps)
     game_over = true;
@@ -436,6 +448,8 @@ float demo_heuristic_lander() {
     // std::cout << " : " << a[0] << " " << a[1];
     // std::cout << std::endl;
 
+    auto pos = env->lander->GetPosition();
+    std::cout << "POS " << pos.x << " " << pos.y << std::endl;
     if (steps % 50 == 0 || done) {
       std::cout << "|> step " << steps << " |> total_reward " << total_reward << std::endl;
     }
