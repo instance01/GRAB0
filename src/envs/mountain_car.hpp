@@ -33,6 +33,6 @@ class MtCarEnv : public Env {
     ~MtCarEnv() {};
 
     std::vector<float> reset(std::mt19937 &generator);
-    std::tuple<std::vector<float>, double, bool> step(int action);
+    std::tuple<std::vector<float>, double, bool> step(const int &action);
 };
 #endif

@@ -16,7 +16,7 @@ class Bandit {
     Game history;
 
     virtual void reset_policy_cache() {};
-    virtual std::vector<double> policy(int i, EnvWrapper env, std::vector<float> obs, bool ret_node=false) {
+    virtual std::vector<double> policy(int i, EnvWrapper &env, const std::vector<float> &obs, bool ret_node=false) {
       return {};
     };
 };

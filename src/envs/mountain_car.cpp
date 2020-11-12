@@ -38,7 +38,7 @@ MtCarEnv::reset(std::mt19937 &generator) {
 }
 
 std::tuple<std::vector<float>, double, bool>
-MtCarEnv::step(int action) {
+MtCarEnv::step(const int &action) {
   steps += 1;
   if (steps >= max_steps) {
     return std::make_tuple(state, 0.0, true);

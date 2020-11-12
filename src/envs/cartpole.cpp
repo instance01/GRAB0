@@ -27,7 +27,7 @@ CartPoleEnv::CartPoleEnv(CartPoleEnv &other) {
 }
 
 std::tuple<std::vector<float>, double, bool>
-CartPoleEnv::step(int action) {
+CartPoleEnv::step(const int &action) {
   steps += 1;
   if (steps >= max_steps)
     return {state, 1., true};

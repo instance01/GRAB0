@@ -19,8 +19,8 @@ class Env {
     std::vector<float> expected_stddev;
     int max_steps;
 
-    virtual std::tuple<std::vector<float>, double, bool> step(int action) {return {};};
-    virtual std::tuple<std::vector<float>, double, bool> step(std::vector<float> action) {return {};};
+    virtual std::tuple<std::vector<float>, double, bool> step(const int &action) {return {};};
+    virtual std::tuple<std::vector<float>, double, bool> step(std::vector<float> &action) {return {};};
     virtual std::vector<float> reset(std::mt19937 &generator) {return {};};
 };
 #endif

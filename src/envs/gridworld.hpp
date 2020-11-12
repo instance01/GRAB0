@@ -27,8 +27,8 @@ class GridWorldEnv : public Env {
     ~GridWorldEnv() {};
     GridWorldEnv(GridWorldEnv &other);
 
-    void move(int action);
+    void move(const int &action);
     std::vector<float> reset(std::mt19937 &generator);
-    std::tuple<std::vector<float>, double, bool> step(int action);
+    std::tuple<std::vector<float>, double, bool> step(const int &action);
 };
 #endif

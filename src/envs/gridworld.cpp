@@ -30,7 +30,7 @@ GridWorldEnv::GridWorldEnv(
 }
 
 void
-GridWorldEnv::move(int action) {
+GridWorldEnv::move(const int &action) {
   // Handle turning left/right.
   if (action == 0)
     dir -= 1;
@@ -79,7 +79,7 @@ GridWorldEnv::reset(std::mt19937 &generator) {
 }
 
 std::tuple<std::vector<float>, double, bool>
-GridWorldEnv::step(int action) {
+GridWorldEnv::step(const int &action) {
   steps += 1;
   if (steps >= max_steps) {
     std::vector<float> obs = {(float) pos.first, (float) pos.second, (float) dir};
