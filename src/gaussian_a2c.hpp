@@ -40,9 +40,12 @@ TORCH_MODULE(GaussianA2CNet);
 
 class GaussianA2CLearner : public A2CLearner {
   public:
+    // torch::Tensor expected_mean_tensor;
+    // torch::Tensor expected_stddev_tensor;
+
     json params;
     GaussianA2CNet policy_net;
-    std::shared_ptr<torch::optim::Optimizer> policy_optimizer;
+    //std::shared_ptr<torch::optim::Optimizer> policy_optimizer;
 
     GaussianA2CLearner() {};
     GaussianA2CLearner(json params, EnvWrapper &env);

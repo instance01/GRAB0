@@ -179,25 +179,20 @@ GaussianA2CLearner::update(std::shared_ptr<Game> game, int n_episode, bool debug
   torch::Tensor policy_loss;
 
   auto rows = torch::arange(0, action_params.size(0), torch::kLong);
+  // TODO GENERALIZE THIS TO n ACTIONS!!
+  int64_t idx_data_mus[2] = {0, 2};
+  auto idx_mus = torch::from_blob(idx_data_mus, 2, torch::TensorOptions().dtype(torch::kLong));
+  int64_t idx_data_sigmas[2] = {1, 3};
+  auto idx_sigmas = torch::from_blob(idx_data_sigmas, 2, torch::TensorOptions().dtype(torch::kLong));
   // TODO: requires_grad
-  auto mus = action_params.index({rows, 0});
-  auto sigmas = action_params.index({rows, 1});
+  auto mus = action_params.index({rows, idx_mus.reshape({-1, 1})});
+  auto sigmas = action_params.index({rows, idx_sigmas.reshape({-1, 1})});
 
   mus.requires_grad_(true);
   sigmas.requires_grad_(true);
-  auto gaussian_pdf = (1.0 / (sigmas * std::sqrt(2 * M_PI))) * torch::exp(-.5 * torch::pow((mcts_actions - mus) / sigmas, 2.));
-  policy_loss = (-torch::log(gaussian_pdf) * normalized_returns).sum();
-  // TODO Normalize (=divide) by mcts_actions size?
-
-  // float* mcts_actions_ptr = (float*) mcts_actions.data_ptr();
-  // float* action_params_ptr = (float*) action_params.data_ptr();
-  // for (int i = 0; i < mcts_actions.numel(); ++i) {
-  //   // TODO: Pretty sure this needs to use torch ops.
-  //   policy_loss += -std::log(
-  //       gaussian_pdf(mcts_actions_ptr[i], action_params_ptr[i], action_params_ptr[i+1])
-  //   ) * normalized_returns[i];
-  // }
-  // std::cout << policy_loss << std::endl;
+  auto gaussian_pdf = (1.0 / (sigmas * std::sqrt(2 * M_PI))) *\
+                      torch::exp(-.5 * torch::pow((mcts_actions.reshape({game->mcts_actions[0].size(), -1}) - mus) / sigmas, 2.));
+  policy_loss = (-torch::log(gaussian_pdf + 1e-6) * normalized_returns).mean();
 
   torch::Tensor value_loss = F::smooth_l1_loss(
       values.reshape(-1),
@@ -207,12 +202,6 @@ GaussianA2CLearner::update(std::shared_ptr<Game> game, int n_episode, bool debug
   value_loss /= mcts_actions.size(0);
 
   torch::Tensor loss = policy_loss + value_loss;
-
-  if (debug_print) {
-    std::cout << policy_loss.item<float>() << " " << value_loss.item<float>() << std::endl;
-    std::cout << policy_net->action_head->weight << std::endl;
-    std::cout << policy_net->action_head->bias << std::endl;
-  }
 
   policy_optimizer->zero_grad();
   loss.backward();
