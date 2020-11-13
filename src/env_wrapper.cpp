@@ -43,7 +43,7 @@ EnvWrapper::init(std::string game, json params) {
 }
 
 std::tuple<std::vector<float>, double, bool>
-EnvWrapper::step(std::vector<float> action) {
+EnvWrapper::step(std::vector<double> &action) {
   std::tuple<std::vector<float>, double, bool> ret = env->step(action);
   double& reward = std::get<1>(ret);
   if (reward != 0 && params["prioritized_sampling"])
@@ -52,7 +52,7 @@ EnvWrapper::step(std::vector<float> action) {
 }
 
 std::tuple<std::vector<float>, double, bool>
-EnvWrapper::step(int action) {
+EnvWrapper::step(const int &action) {
   std::tuple<std::vector<float>, double, bool> ret = env->step(action);
   double& reward = std::get<1>(ret);
   if (reward != 0 && params["prioritized_sampling"])

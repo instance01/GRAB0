@@ -280,7 +280,7 @@ LunarLanderEnv::reset(std::mt19937 &generator_) {
   leg1 = _create_leg(0);
   leg2 = _create_leg(1);
 
-  std::vector<float> action = {0.0, 0.0};
+  std::vector<double> action = {0.0, 0.0};
   std::vector<float> obs;
   std::tie(obs, std::ignore, std::ignore) = step(action);
 
@@ -290,13 +290,13 @@ LunarLanderEnv::reset(std::mt19937 &generator_) {
 }
 
 std::tuple<std::vector<float>, double, bool>
-LunarLanderEnv::step(std::vector<float> &action) {
+LunarLanderEnv::step(std::vector<double> &action) {
   steps += 1;
   if (steps > max_steps)
     game_over = true;
 
-  float main_engine_action = action[0];
-  float left_right_engine_action = action[1];
+  float main_engine_action = (float) action[0];
+  float left_right_engine_action = (float) action[1];
 
   main_engine_action = std::clamp(main_engine_action, (float) -1.0, (float) 1.0);
   left_right_engine_action = std::clamp(left_right_engine_action, (float) -1.0, (float) 1.0);
@@ -388,7 +388,7 @@ LunarLanderEnv::step(std::vector<float> &action) {
   return ret;
 }
 
-std::vector<float> heuristic(std::vector<float> state) {
+std::vector<double> heuristic(std::vector<float> state) {
   float angle_targ = state[0] * 0.5 + state[2] * 1.0;
   if (angle_targ > 0.4) angle_targ = 0.4;
   if (angle_targ < -0.4) angle_targ = -0.4;
@@ -406,7 +406,7 @@ std::vector<float> heuristic(std::vector<float> state) {
   float a2 = -angle_todo * 20;
   a1 = std::clamp(a1, (float) -1.0, (float) 1.0);
   a2 = std::clamp(a2, (float) -1.0, (float) 1.0);
-  std::vector<float> a = {a1, a2};
+  std::vector<double> a = {a1, a2};
   return a;
 }
 

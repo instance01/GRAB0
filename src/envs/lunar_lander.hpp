@@ -79,7 +79,7 @@ class LunarLanderEnv : public Env {
     void _create_moon();
     void _reset(std::mt19937 &generator);
     std::vector<float> reset(std::mt19937 &generator);
-    std::tuple<std::vector<float>, double, bool> step(std::vector<float> &action);
+    std::tuple<std::vector<float>, double, bool> step(std::vector<double> &action);
 
     void clone_body(b2Body* current, b2Body* other);
 };

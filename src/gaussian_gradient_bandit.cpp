@@ -101,13 +101,12 @@ GaussianGradientBanditSearch::GaussianGradientBanditSearch(
     auto bandit = SingleGaussianGradientBandit(params, generator);
     bandit.gaussian_params = std::vector<double>(vec.begin(), vec.end());
     std::vector<double> action = bandit.sample_from_policy();
-    std::vector<float> float_action = std::vector<float>(action.begin(), action.end());
     bandits.push_back(bandit);
 
     // Continue evaluating.
     double reward;
     bool done;
-    std::tie(state, reward, done) = env_.step(float_action);
+    std::tie(state, reward, done) = env_.step(action);
 
     if (done)
       break;
@@ -190,14 +189,13 @@ GaussianGradientBanditSearch::policy(int i, EnvWrapper &orig_env, const std::vec
       std::vector<double> gaussian_params;
       std::vector<double> action;
       std::tie(gaussian_params, action) = bandits[j].policy();
-      std::vector<float> float_action = std::vector<float>(action.begin(), action.end());
 
       // TODO. Why keep those histories?
       actions_history.push_back(action);
       params_history.push_back(gaussian_params);
 
       double reward;
-      std::tie(obs, reward, done) = env.step(float_action);
+      std::tie(obs, reward, done) = env.step(action);
 
       states.push_back(obs);
 
