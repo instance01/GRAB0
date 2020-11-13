@@ -4,4 +4,5 @@
 #include "cfg.hpp"
 
 void fuzz_bandit(json params, EnvWrapper orig_env);
+void test_gaussian_bandit();
 #endif

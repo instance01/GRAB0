@@ -5,6 +5,9 @@
 #include "a2c.hpp"
 #include "game.hpp"
 #include "gradient_bandit.hpp"
+#include "gaussian_gradient_bandit.hpp"
+#include "gaussian_util.hpp"
+#include "envs/lunar_lander.hpp"
 
 
 void fuzz_bandit(json params, EnvWrapper orig_env) {
@@ -126,5 +129,84 @@ void fuzz_bandit(json params, EnvWrapper orig_env) {
 
     delete registry;
     delete replay_buffer;
+  }
+}
+
+void test_gaussian_bandit() {
+  std::random_device rd;
+  std::mt19937 generator(rd());
+
+  auto params = load_cfg("lunar1");
+  EnvWrapper env = EnvWrapper();
+  env.init("lunar", params);
+  bool continuous = params["continuous"];
+  A2CLearner* a2c_agent;
+  if (continuous) {
+    a2c_agent = new GaussianA2CLearner(params, env);
+  } else {
+    a2c_agent = new A2CLearner(params, env);
+  }
+
+  ReplayBuffer *replay_buffer = new ReplayBuffer(
+    params["memory_capacity"],
+    params["experimental_top_cutoff"],
+    params["prioritized_sampling"]
+  );
+  Registry *registry = new Registry(replay_buffer);
+
+  // TODO REMOVE
+  auto lunar_env = std::static_pointer_cast<LunarLanderEnv>(env.env);
+
+  bool done = false;
+  auto state = env.reset(generator);
+
+  // TODO REMOVE
+  bool allow_heuristic1 = true;
+  bool use_heuristic1 = false;
+  bool use_heuristic2 = false;
+
+  int i = 0;
+  float total_reward = 0.0;
+  while (!done) {
+    i += 1;
+    if (i > 500)
+      break;
+    auto mcts = new GaussianGradientBanditSearch(env, a2c_agent, params, registry, generator, false, false);
+    auto mcts_action = mcts->policy(0, env, state);
+    std::vector<float> action_params = std::vector<float>(mcts_action.begin(), mcts_action.end());
+
+    std::vector<double> sampled_action(2);
+    for (int i = 0; i < 2; ++i) {
+      sampled_action[i] =  sample(action_params[i*2], action_params[i*2+1], generator);
+    }
+
+    // TODO REMOVE ; just for testing whether we can even win this game?
+    auto pos = lunar_env->lander->GetPosition();
+    if (pos.y < 4.09 && allow_heuristic1) {
+      use_heuristic1 = true;
+    }
+    if (use_heuristic1) {
+      sampled_action = {1.0, 0.0};
+    }
+    if (use_heuristic1 && pos.y > 4.09) {
+      allow_heuristic1 = false;
+      sampled_action = {-1.0, 0.0};
+    }
+    if (pos.y < 3.92) {
+      use_heuristic2 = true;
+      allow_heuristic1 = false;
+    }
+    if (use_heuristic2) {
+      sampled_action = {-1.0, 0.0};
+    }
+
+    // TODO REMOVE DEBUG PRINTS
+    std::cout << "|step: " << i << " |a: " << action_params << " |sa: " << sampled_action << std::endl;
+    std::cout << pos.x << " " << pos.y << std::endl;
+
+    float reward;
+    std::tie(state, reward, done) = env.step(sampled_action);
+    total_reward += reward;
+    std::cout << reward << " tot:" << total_reward << " " << done << std::endl;
   }
 }
