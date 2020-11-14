@@ -20,6 +20,7 @@ ReplayBuffer::add(
     std::vector<std::vector<double>> mcts_actions
 ) {
   std::shared_ptr<Game> game = std::make_shared<Game>(states, rewards, mcts_actions);
+  game->calc_tot_reward_inplace();
   buffer.push_back(game);
   if (buffer.size() > window_size)
     buffer.pop_front();
@@ -36,7 +37,7 @@ std::vector<double>
 ReplayBuffer::get_rewards() {
   std::vector<double> tot_reward_per_game;
   for (auto game : buffer) {
-    tot_reward_per_game.push_back(std::accumulate(game->rewards.begin(), game->rewards.end(), 0.));
+    tot_reward_per_game.push_back(game->tot_reward);
   }
   return tot_reward_per_game;
 }

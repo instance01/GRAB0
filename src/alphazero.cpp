@@ -106,6 +106,7 @@ std::tuple<int, double, double> evaluate(EnvWrapper env, json &params, A2CLearne
     registry_game.states = states;
     registry_game.rewards = rewards;
     registry_game.mcts_actions = mcts_actions;
+    registry_game.tot_reward = total_reward / (j + 1);
     registry->save_if_best(registry_game, total_reward / (j + 1));
 
     min_len = std::min(min_len, (int) actions.length());
@@ -368,12 +369,13 @@ std::pair<int, double> episode(
         std::string actions;
 
         if (continuous) {
-          double tot_reward = 0;
-          for (auto reward : game->rewards) {
-            tot_reward += reward;
-            actions += "0";
-          }
-          std::cout << tot_reward << " ";
+          // double tot_reward = 0;
+          // for (auto reward : game->rewards) {
+          //   tot_reward += reward;
+          //   actions += "0";
+          // }
+          // std::cout << tot_reward << " ";
+          std::cout << game->tot_reward << " ";
         } else {
           for (auto mcts_action : game->mcts_actions) {
             auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
@@ -634,6 +636,7 @@ std::shared_ptr<Game> run_actor(
   if (!continuous)
     std::cout << mcts_actions << std::endl;
 
+  game->tot_reward = total_reward;
   if (continuous) {
     replay_buffer->add(game);
   } else {
@@ -644,6 +647,7 @@ std::shared_ptr<Game> run_actor(
   bool experimental_top_fill = params["experimental_top_fill"];
   if (!params["tough_ce"] && !greedy && experimental_top_fill && !continuous) {
     std::cout << "## " << game2->mcts_actions.size() << std::endl;
+    game2->tot_reward = total_reward;
     registry->save_if_best(*game2, total_reward);
     if (total_reward >= experimental_top_cutoff)
       replay_buffer->add(game2);
