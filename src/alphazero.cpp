@@ -162,6 +162,8 @@ void write_tensorboard_kpis(
     double total_reward,
     const std::vector<int>& actor_lengths,
     const std::vector<int>& sample_lens,
+    const std::vector<double>& actor_tot_rewards,
+    const std::vector<double>& sample_tot_rewards,
     const std::vector<double>& losses,
     float lr,
     double avg_loss,
@@ -179,6 +181,12 @@ void write_tensorboard_kpis(
       "Train/Samples/" + std::to_string(n_run), n_episode, sample_lens
   );
   writer.add_histogram(
+      "Actor/Samples_Tot_Rewards/" + std::to_string(n_run), n_episode, actor_tot_rewards
+  );
+  writer.add_histogram(
+      "Train/Samples_Tot_Rewards/" + std::to_string(n_run), n_episode, sample_tot_rewards
+  );
+  writer.add_histogram(
       "Train/Loss/" + std::to_string(n_run), n_episode, losses
   );
 
@@ -188,7 +196,7 @@ void write_tensorboard_kpis(
   writer.add_scalar("Train/AvgLoss/" + std::to_string(n_run), n_episode, avg_loss);
 }
 
-std::vector<int> run_actors(
+std::tuple<std::vector<int>, std::vector<double>> run_actors(
     EnvWrapper &env,
     json &params,
     A2CLearner* a2c_agent,
@@ -199,7 +207,6 @@ std::vector<int> run_actors(
   std::random_device rd;
   int n_actors = params["n_actors"];
   int n_procs = params["n_procs"];
-  std::vector<int> actor_lengths;
 
   bool do_warmup = params["do_warmup"];
   int n_warmup = params["n_warmup"];
@@ -246,12 +253,15 @@ std::vector<int> run_actors(
   }
   tasks.clear();
 
+  std::vector<int> actor_lengths;
+  std::vector<double> actor_tot_rewards;
   for(auto game : games) {
     actor_lengths.push_back(game->states.size());
+    actor_tot_rewards.push_back(game->tot_reward);
     replay_buffer->add(std::move(game));
   }
 
-  return actor_lengths;
+  return std::make_tuple(actor_lengths, actor_tot_rewards);
 }
 
 std::pair<int, double> episode(
@@ -269,7 +279,9 @@ std::pair<int, double> episode(
   a2c_agent->policy_net->eval();
 
   // Run self play games in n_procs parallel processes.
-  std::vector<int> actor_lengths = run_actors(
+  std::vector<int> actor_lengths;
+  std::vector<double> actor_tot_rewards;
+  std::tie(actor_lengths, actor_tot_rewards) = run_actors(
       env, params, a2c_agent, n_episode, replay_buffer, registry
   );
 
@@ -309,6 +321,7 @@ std::pair<int, double> episode(
   // Train network after self play.
   int train_steps = params["train_steps"];
   std::vector<int> sample_lens;
+  std::vector<double> sample_tot_rewards;
   std::vector<double> losses;
 
   std::random_device rd;
@@ -384,6 +397,7 @@ std::pair<int, double> episode(
           std::cout << actions.size() << " ";
         }
         sample_lens.push_back(actions.size());
+        sample_tot_rewards.push_back(game->tot_reward);
         losses.push_back(loss.item<double>());
       }
       std::cout << std::endl;
@@ -417,6 +431,7 @@ std::pair<int, double> episode(
     }
 
     sample_lens.push_back(actions.size());
+    sample_tot_rewards.push_back(game->tot_reward);
     losses.push_back(loss.item<double>());
   }
 
@@ -429,6 +444,7 @@ std::pair<int, double> episode(
   double avg_loss = mean<double>(losses);
   std::cout <<
       "AVG LENS " << mean<int>(sample_lens) <<
+      " |AVG TOT_REW " << mean<double>(sample_tot_rewards) <<
       " |AVG LOSS " << avg_loss <<
       " |TIME (min) " << std::chrono::duration_cast<std::chrono::minutes>(curr_time - start_time).count() <<
       std::endl;
@@ -448,6 +464,8 @@ std::pair<int, double> episode(
     total_reward,
     actor_lengths,
     sample_lens,
+    actor_tot_rewards,
+    sample_tot_rewards,
     losses,
     lr,
     avg_loss,
