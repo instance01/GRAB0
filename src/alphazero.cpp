@@ -303,6 +303,7 @@ std::pair<int, double> episode(
   std::cout << std::endl;
 
   // Calculate MCTS confidence for debugging purposes
+  std::cout << "MCTS CONF " << std::endl;
   std::vector<double> max_action_probs;
   size_ = replay_buffer->buffer.size() - n_actors - 1;
   for (int i = replay_buffer->buffer.size() - 1; i > size_; --i) {
@@ -310,10 +311,10 @@ std::pair<int, double> episode(
     for (auto mcts_action : game->mcts_actions) {
       auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
       max_action_probs.push_back(*max_el);
-      //std::cout << *max_el << " ";
+      std::cout << *max_el << " ";
     }
   }
-  //std::cout << std::endl;
+  std::cout << std::endl;
   auto mcts_confidence_mean = mean<double>(max_action_probs);
   auto mcts_confidence_median = median<double>(max_action_probs);
   std::cout << "CONFIDENCE " << mcts_confidence_mean << " " << mcts_confidence_median << std::endl;
@@ -382,12 +383,6 @@ std::pair<int, double> episode(
         std::string actions;
 
         if (continuous) {
-          // double tot_reward = 0;
-          // for (auto reward : game->rewards) {
-          //   tot_reward += reward;
-          //   actions += "0";
-          // }
-          // std::cout << tot_reward << " ";
           std::cout << game->tot_reward << " ";
         } else {
           for (auto mcts_action : game->mcts_actions) {
