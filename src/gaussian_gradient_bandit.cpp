@@ -1,3 +1,4 @@
+#include <chrono>
 #include <random>
 #include "gaussian_gradient_bandit.hpp"
 #include "gaussian_util.hpp"
@@ -139,6 +140,9 @@ GaussianGradientBanditSearch::GaussianGradientBanditSearch(
 
 std::vector<double>
 GaussianGradientBanditSearch::policy(int i, EnvWrapper &orig_env, const std::vector<float> &state, bool ret_node) {
+  //auto begin = std::chrono::steady_clock::now();
+  bool won_at_all = false;
+
   for (int k = 0; k < n_iter; ++k) {
     std::vector<double> rewards;
     std::vector<std::vector<double>> actions_history;
@@ -146,14 +150,6 @@ GaussianGradientBanditSearch::policy(int i, EnvWrapper &orig_env, const std::vec
     std::vector<std::vector<float>> states;
 
     EnvWrapper env = *orig_env.clone();
-
-    float tau = 1.;
-    if (greedy_bandit) {
-      for (int i = 0; i < (int) tau_schedule_k.size(); ++i) {
-        if (k >= tau_schedule_k[i])
-          tau = 1. / tau_schedule_tau[i];
-      }
-    }
 
     double alpha = params["dirichlet_alpha"];
     double frac = params["dirichlet_frac"];
@@ -207,6 +203,7 @@ GaussianGradientBanditSearch::policy(int i, EnvWrapper &orig_env, const std::vec
         // To keep things consistent later on, let's do it manually.
         if (reward == 100.0) {
           won = true;
+          won_at_all = true;
         }
         j += 1;
         break;
@@ -237,9 +234,28 @@ GaussianGradientBanditSearch::policy(int i, EnvWrapper &orig_env, const std::vec
       bandits[m + i].update(params_history[m], actions_history[m], cumulative_rewards[m]);
     }
 
+    double tot_rew = std::accumulate(rewards.begin(), rewards.end(), 0);
+
     if (won) {
       // TODO
-      //std::cout << "after update: " << bandits[i].gaussian_params << std::endl;
+      //std::cout << "WON: " << state[0] << " " << state[1] << " r::" << (history.tot_reward + tot_rew) << " p::" << bandits[i].gaussian_params << std::endl;
+
+      // TODO: Obviously this does not generalize to other games.. lmao. but just for testing now.
+      // First, copy history.
+      Game registry_game;
+      registry_game.states = history.states;
+      registry_game.rewards = history.rewards;
+      registry_game.mcts_actions = history.mcts_actions;
+      registry_game.tot_reward = history.tot_reward;
+      // Extend history with current game.
+      registry_game.states.insert(registry_game.states.end(), states.begin(), states.end());
+      registry_game.rewards.insert(registry_game.rewards.end(), rewards.begin(), rewards.end());
+      //registry_game.mcts_actions.insert(registry_game.mcts_actions.end(), params_history.begin(), params_history.end());
+      registry_game.mcts_actions.insert(registry_game.mcts_actions.end(), actions_history.begin(), actions_history.end());
+      registry_game.tot_reward += tot_rew;
+        if (registry_game.mcts_actions[0].size() == 4)
+            abort();
+      registry->save_if_best(registry_game, registry_game.tot_reward);
     }
   }
 
@@ -248,6 +264,13 @@ GaussianGradientBanditSearch::policy(int i, EnvWrapper &orig_env, const std::vec
 
   // TODO Biggest advantage
   //std::cout << "BIGGEST A " << bandits[i].biggest_advantage << " |mr:" << bandits[i].mean_reward << std::endl;
+
+  //auto end = std::chrono::steady_clock::now();
+  //std::cout << "Tdiff=" << std::chrono::duration_cast<std::chrono::seconds>(end - begin).count() << "[s]" << std::endl;
+
+  if (won_at_all) {
+    //std::cout << "-W-" << std::endl;
+  }
 
   // TODO ?
   // history.mcts_actions.push_back(ret);
