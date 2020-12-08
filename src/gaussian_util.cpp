@@ -17,5 +17,6 @@ float sample(float mu, float sigma, std::mt19937 &generator) {
   // TODO Should not recreate distribution here all the time.
   std::normal_distribution<double> noise_distribution(0.0, 1.0);
   // Reparameterized
-  return mu + sigma * noise_distribution(generator);
+  auto noise = noise_distribution(generator);
+  return mu + sigma * noise;
 }

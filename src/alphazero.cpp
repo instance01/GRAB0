@@ -1,3 +1,4 @@
+#include <cmath>
 #include <random>
 #include <iostream>
 #include <algorithm>
@@ -302,16 +303,20 @@ std::pair<int, double> episode(
   }
   std::cout << std::endl;
 
+  // TODO I adapted this for continuous. Doesnt work well for non-continuous any longer.
   // Calculate MCTS confidence for debugging purposes
   std::cout << "MCTS CONF " << std::endl;
+  std::cout << std::setprecision(4);
   std::vector<double> max_action_probs;
   size_ = replay_buffer->buffer.size() - n_actors - 1;
   for (int i = replay_buffer->buffer.size() - 1; i > size_; --i) {
     auto game = replay_buffer->buffer[i];
     for (auto mcts_action : game->mcts_actions) {
-      auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
-      max_action_probs.push_back(*max_el);
-      std::cout << *max_el << " ";
+      max_action_probs.push_back(mcts_action[1]);
+      //auto max_el = std::max_element(mcts_action.begin(), mcts_action.end());
+      //max_action_probs.push_back(*max_el);
+      //std::cout << *max_el << " ";
+      //std::cout << "(" << mcts_action[0] << " " << mcts_action[1] << ") ";
     }
   }
   std::cout << std::endl;
@@ -354,6 +359,13 @@ std::pair<int, double> episode(
     if (n_episode > 800)
       train_steps = 500;
   }
+
+  auto games_ = replay_buffer->get_top();
+  std::cout << "CURR_TOP: ";
+  for (auto game : games_) {
+    std::cout << game->tot_reward << " ";
+  }
+  std::cout << std::endl;
 
   // TRAINING.
   a2c_agent->policy_net->train();
@@ -542,6 +554,12 @@ std::shared_ptr<Game> run_actor(
     // So let's just put all of them as greedy to sample from TOP
     game->is_greedy = true;
   }
+
+  std::ostringstream oss;
+  oss << std::setprecision(3);
+  oss << std::endl << idx << " ~POS~ ";
+  //auto lunar_env = std::static_pointer_cast<LunarLanderEnv>(env.env);
+
   // In the continuous case there is no such thing as game2 tbh.. but yea. Just something to keep in mind.
   std::shared_ptr<Game> game2 = std::make_shared<Game>();
   game2->is_greedy = true;
@@ -554,7 +572,10 @@ std::shared_ptr<Game> run_actor(
         mcts_agent = new GradientBanditSearch(orig_env, a2c_agent, params, registry, generator, do_print, greedy_bandit);
       }
     }
-    std::cout << i << " " << std::flush;
+    //oss << "(" << lunar_env->lander->GetPosition().x << " " << lunar_env->lander->GetPosition().y << ") ";
+    //if (i % 10 == 0)
+    //  std::cout << i << " " << std::flush;
+    mcts_agent->history = *game;
     auto mcts_action = mcts_agent->policy(0, env, state);
     if (bandit_type == "grad") {
       delete mcts_agent;
@@ -584,6 +605,10 @@ std::shared_ptr<Game> run_actor(
       if (!follow_bandit_greedily) {
         sampled_continuous_action = a2c_sampled_action;
       }
+
+      // policy
+      oss << "\033[1m[\033[0m" << vec[0] << " " << vec[1] << " " << vec[2] << " " << vec[3] << " ";
+      oss << "<" << a2c_sampled_action[0] << " " << a2c_sampled_action[1] << ">\033[1m]\033[0m ";
 
       std::tie(next_state, reward, done) = env.step(sampled_continuous_action);
 
@@ -639,6 +664,9 @@ std::shared_ptr<Game> run_actor(
     } else {
       game->mcts_actions.push_back(mcts_action);
     }
+    // Update tot_reward continuously since we use the game object as history in the mcts agent.
+    // This would not be needed otherwise.
+    game->tot_reward = total_reward;
 
     state = next_state;
 
@@ -646,11 +674,16 @@ std::shared_ptr<Game> run_actor(
       break;
   }
 
+  //std::string s = oss.str();
+  //std::cout << s << " R:" << total_reward << std::endl;
+
   if (!continuous)
     std::cout << mcts_actions << std::endl;
 
   game->tot_reward = total_reward;
   if (continuous) {
+    std::cout << game->mcts_actions.size() << " ! " << game->mcts_actions[0].size() << std::endl;
+    //std::cout << game->rewards << std::endl;
     replay_buffer->add(game);
   } else {
     registry->save_if_best(*game, total_reward);

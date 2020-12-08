@@ -13,6 +13,8 @@ Registry::save_if_best(Game game, double reward) {
     best_reward = reward;
     best_game = game;
 
+    std::cout << "REGISTRY: " << best_reward << std::endl;
+
     // for (auto actions : game.mcts_actions) {
     //     for (auto a : actions) {
     //         std::cout << a << " ";
