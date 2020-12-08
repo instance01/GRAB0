@@ -1,5 +1,6 @@
 #include "game.hpp"
 
+void
 Game::calc_tot_reward_inplace() {
   // TODO: Gamma.
   for (auto rew : rewards) {
