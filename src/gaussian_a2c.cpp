@@ -48,6 +48,11 @@ GaussianA2CNetImpl::GaussianA2CNetImpl(
 
   action_head->reset_parameters();
   value_head->reset_parameters();
+
+  // Initialize the biases such that variance is 1.
+  auto p = action_head->named_parameters(false);
+  auto b = p.find("bias");
+  torch::nn::init::constant_(*b, 1.0);
 }
 
 void GaussianA2CNetImpl::reset() {
@@ -59,7 +64,7 @@ std::pair<torch::Tensor, torch::Tensor>
 GaussianA2CNetImpl::forward(torch::Tensor input) {
   auto x = input.view({input.size(0), -1});
   x = seq->forward(x);
-  auto policy = F::softmax(action_head(x), F::SoftmaxFuncOptions(-1));
+  auto policy = action_head(x);
   auto value = value_head(x);
   return std::make_pair(policy, value);
 }
@@ -122,10 +127,17 @@ GaussianA2CLearner::_calc_normalized_rewards(std::vector<double> rewards) {
       flt.data(),
       flt.size(),
       torch::TensorOptions().dtype(torch::kFloat32)
-  );
+  ).clone();  // That clone is extremely important. Major fix.
+
+  if (discounted_rewards_tensor.numel() <= 1) {
+    return discounted_rewards_tensor;
+  }
 
   discounted_rewards_tensor = (discounted_rewards_tensor - discounted_rewards_tensor.mean());
   auto std = discounted_rewards_tensor.std();
+  if (torch::isnan(std).any().item<bool>()) { // TODO: This check is probably not needed anymore.
+    return discounted_rewards_tensor;
+  }
   if (std.item<float>() != 0) {
     discounted_rewards_tensor /= std;
   }
@@ -150,30 +162,38 @@ GaussianA2CLearner::predict_policy(std::vector<std::vector<float>> states) {
   return policy_net->forward(samples);
 }
 
+
 torch::Tensor
 GaussianA2CLearner::update(std::shared_ptr<Game> game, int n_episode, bool debug_print) {
+  // TODO Below remove retain_grad things. This is just for debugging.
   policy_net->train();
 
-  // Prepare data.
-  auto flattened_states = flatten_as_float(game->states);
+  std::vector<std::vector<float>> states = game->states;
+  std::vector<std::vector<double>> actions = game->mcts_actions;
+  std::vector<double> rewards = game->rewards;
+
+  std::vector<float> states_ = flatten_as_float(states);
   auto samples_tensor = vec_2d_as_tensor(
-      flattened_states, torch::kFloat32, game->states.size(), game->states[0].size()
+      states_, torch::kFloat32, states.size(), states[0].size()
   );
   torch::Tensor attached_samples = normalize(samples_tensor);
   auto samples = attached_samples.detach_();
 
-  auto normalized_returns = _calc_normalized_rewards(game->rewards);
+  auto normalized_returns = _calc_normalized_rewards(rewards);
+  if (normalized_returns.numel() <= 1) {
+    std::cout << "d" << normalized_returns << std::endl;
+  }
 
-  auto flattened_mcts = flatten_as_float(game->mcts_actions);
+  auto flattened_mcts = flatten_as_float(actions);
   auto attached_mcts_actions = vec_2d_as_tensor(
-      flattened_mcts, torch::kFloat32, game->mcts_actions.size(), game->mcts_actions[0].size()
+      flattened_mcts, torch::kFloat32, actions.size(), actions[0].size()
   );
+  auto mcts_actions = attached_mcts_actions.detach_();
 
   // Forward.
   torch::Tensor action_params;
   torch::Tensor values;
   std::tie(action_params, values) = policy_net->forward(samples);
-  auto mcts_actions = attached_mcts_actions.detach_();
 
   // Calculate losses.
   torch::Tensor policy_loss;
@@ -184,29 +204,115 @@ GaussianA2CLearner::update(std::shared_ptr<Game> game, int n_episode, bool debug
   auto idx_mus = torch::from_blob(idx_data_mus, 2, torch::TensorOptions().dtype(torch::kLong));
   int64_t idx_data_sigmas[2] = {1, 3};
   auto idx_sigmas = torch::from_blob(idx_data_sigmas, 2, torch::TensorOptions().dtype(torch::kLong));
-  // TODO: requires_grad
+
   auto mus = action_params.index({rows, idx_mus.reshape({-1, 1})});
   auto sigmas = action_params.index({rows, idx_sigmas.reshape({-1, 1})});
+  mus.retain_grad();
+  sigmas.retain_grad();
 
-  mus.requires_grad_(true);
-  sigmas.requires_grad_(true);
-  auto gaussian_pdf = (1.0 / (sigmas * std::sqrt(2 * M_PI))) *\
-                      torch::exp(-.5 * torch::pow((mcts_actions.reshape({game->mcts_actions[0].size(), -1}) - mus) / sigmas, 2.));
-  policy_loss = (-torch::log(gaussian_pdf + 1e-6) * normalized_returns).mean();
+  auto gaussian_pdf = (1.0 / (torch::abs(sigmas) * std::sqrt(2 * M_PI))) *\
+                      torch::exp(-.5 * torch::pow((mcts_actions.reshape({actions[0].size(), -1}) - mus) / torch::abs(sigmas), 2.));
+  gaussian_pdf.requires_grad_(true);
+  gaussian_pdf.retain_grad();
+  policy_loss = (-torch::log(gaussian_pdf + 1e-8) * normalized_returns.detach()).mean();
+  policy_loss.retain_grad();
 
   torch::Tensor value_loss = F::smooth_l1_loss(
       values.reshape(-1),
-      normalized_returns,
+      normalized_returns.detach(),
       torch::nn::SmoothL1LossOptions(torch::kSum)
   );
-  value_loss /= mcts_actions.size(0);
+  value_loss /= mcts_actions.detach().size(0);
 
   torch::Tensor loss = policy_loss + value_loss;
+  policy_loss.retain_grad();
+  loss.retain_grad();
 
   policy_optimizer->zero_grad();
-  loss.backward();
+  loss.backward({}, true, true);
+  auto mus_grad = mus.grad();
+  int size_ = std::min(10, (int) game->mcts_actions.size());
+
+  // START DEBUGGING
+  //if (mus_grad.numel() <= 2) {
+  std::vector<float> v_ga(gaussian_pdf.data_ptr<float>(), gaussian_pdf.data_ptr<float>() + gaussian_pdf.numel());
+  std::vector<float> v_mus(mus.data_ptr<float>(), mus.data_ptr<float>() + mus.numel());
+  std::vector<float> v_sigmas(sigmas.data_ptr<float>(), sigmas.data_ptr<float>() + sigmas.numel());
+  std::cout << std::endl;
+  std::cout << "\033[1m[M]\033[0m ";
+  for (int i = 0; i < size_; ++i) {
+    std::cout << v_mus[i] << " " << v_mus[v_mus.size() / 2 + i] << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "\033[1m[S]\033[0m ";
+  for (int i = 0; i < size_; ++i) {
+    std::cout << v_sigmas[i] << " " << v_sigmas[v_sigmas.size() / 2 + i] << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "\033[1m[G]\033[0m ";
+  for (int i = 0; i < size_; ++i) {
+    std::cout << v_ga[i] << " ";
+  }
+  std::cout << std::endl;
+
+  std::vector<float> v_r(normalized_returns.data_ptr<float>(), normalized_returns.data_ptr<float>() + normalized_returns.numel());
+  std::cout << "\033[1m[R]\033[0m ";
+  //for (int i = 0; i < v_r.size(); ++i) {
+  for (int i = 0; i < size_; ++i) {
+    std::cout << v_r[i] << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "\033[1m[MC]\033[0m ";
+  for (int i = 0; i < size_; ++i) {
+    std::cout << game->mcts_actions[i] << " ";
+  }
+  std::cout << std::endl;
+
+  std::vector<float> v_mus_grad(mus_grad.data_ptr<float>(), mus_grad.data_ptr<float>() + mus_grad.numel());
+  //std::cout << " M G " << std::endl;
+  //std::cout << v_mus_grad << std::endl;
+  //std::cout << std::endl;
+  std::cout << "\033[1m[GRAD]\033[0m ";
+  for (int i = 0; i < size_; ++i) {
+    std::cout << v_mus_grad[i] << " " << v_mus_grad[v_mus_grad.size() / 2 + i] << " ";
+  }
+  std::cout << std::endl;
+  std::cout << "LL " << policy_loss.item<float>() << " " << value_loss.item<float>() << std::endl;
+  //}
+  // END DEBUGGING
+
   policy_optimizer->step();
 
   policy_net->eval();
+  torch::NoGradGuard no_grad;
+
+  int size = std::min(10, (int) game->mcts_actions.size());
+
+  // Print vector of mcts_actions, mus, sigmas.
+  // if (debug_print) {
+  //   std::vector<float> v_mus(mus.data_ptr<float>(), mus.data_ptr<float>() + mus.numel());
+  //   std::vector<float> v_sigmas(sigmas.data_ptr<float>(), sigmas.data_ptr<float>() + sigmas.numel());
+
+  //   std::cout << "\033[1m[MC]\033[0m ";
+  //   //for (int i = 0; i < game->mcts_actions.size(); ++i) {
+  //   for (int i = 0; i < size; ++i) {
+  //     //std::cout << game->mcts_actions[i] << " " << game->mcts_actions[game->mcts_actions.size() / 2 + i] << " ";
+  //     std::cout << game->mcts_actions[i] << " ";
+  //   }
+  //   std::cout << std::endl;
+  //   std::cout << "\033[1m[M]\033[0m ";
+  //   //for (int i = 0; i < v_mus.size(); ++i) {
+  //   for (int i = 0; i < size; ++i) {
+  //     std::cout << v_mus[i] << " " << v_mus[v_mus.size() / 2 + i] << " ";
+  //   }
+  //   std::cout << std::endl;
+  //   std::cout << "\033[1m[S]\033[0m ";
+  //   //for (int i = 0; i < v_sigmas.size(); ++i) {
+  //   for (int i = 0; i < size; ++i) {
+  //     std::cout << v_sigmas[i] << " " << v_sigmas[v_sigmas.size() / 2 + i] << " ";
+  //   }
+  //   std::cout << std::endl;
+  // }
+
   return loss;
 }
