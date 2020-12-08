@@ -6,6 +6,7 @@
 #include "envs/gridworld.hpp"
 #include "envs/cartpole.hpp"
 #include "envs/lunar_lander.hpp"
+#include "envs/easy.hpp"
 
 
 // TODO This should be templates at some point.
@@ -23,6 +24,8 @@ EnvWrapper::init(std::string game, json params) {
     env = std::make_shared<CartPoleEnv>();
   } else if (game == "lunar") {
     env = std::make_shared<LunarLanderEnv>(true);
+  } else if (game == "easy") {
+    env = std::make_shared<EasyEnv>();
   } else {
     std::set<std::pair<int, int>> blocks;
     int width = 3;
@@ -81,6 +84,9 @@ EnvWrapper::clone() {
   } else if (game == "lunar") {
     auto lunar_env = std::static_pointer_cast<LunarLanderEnv>(env);
     env_->env = std::make_shared<LunarLanderEnv>(*lunar_env);
+  } else if (game == "easy") {
+    auto easy_env = std::static_pointer_cast<EasyEnv>(env);
+    env_->env = std::make_shared<EasyEnv>(*easy_env);
   } else {
     auto grid_env = std::static_pointer_cast<GridWorldEnv>(env);
     env_->env = std::make_shared<GridWorldEnv>(*grid_env);
